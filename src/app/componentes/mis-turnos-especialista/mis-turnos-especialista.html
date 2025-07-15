@@ -1,0 +1,138 @@
+
+<nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+  <ul class="navbar-links">
+    <li><button (click)="toggleVista(false)">Mis Turnos</button></li>
+    <li><button (click)="toggleVista(true)">Mi Perfil</button></li>
+    <li><button (click)="goTo('historias-clinicas-especialista')">Pacientes</button></li>
+    <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+  </ul>
+</nav>
+
+<!-- PERFIL -->
+<div *ngIf="mostrarPerfil">
+  <div class="perfil-container" *ngIf="userData">
+    <h2>Mi Perfil</h2>
+    <img [src]="userData.fotoPerfil" alt="Foto de perfil" class="foto-perfil" />
+    <div class="datos-usuario">
+      <p><strong>Nombre:</strong> {{ userData.nombre }}</p>
+      <p><strong>Apellido:</strong> {{ userData.apellido }}</p>
+      <p><strong>Edad:</strong> {{ userData.edad }}</p>
+      <p><strong>DNI:</strong> {{ userData.dni }}</p>
+      <p><strong>Mail:</strong> {{ userData.mail }}</p>
+    </div>
+
+    <!-- Horarios -->
+    <div class="horarios-wrapper">
+      <h2>Disponibilidad por especialidad</h2>
+
+      <div *ngFor="let h of horarios; let i = index" class="horario-row">
+        <select [(ngModel)]="h.especialidad" class="campo">
+          <option value="" disabled selected>Seleccionar especialidad</option>
+          <option *ngFor="let esp of especialidades" [value]="esp">
+  {{ formatearEspecialidad(esp) }}
+</option>
+        </select>
+
+        <select [(ngModel)]="h.dia" class="campo" [disabled]="!h.especialidad">
+          <option value="" disabled selected>Seleccionar día</option>
+          <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
+        </select>
+
+        <select [(ngModel)]="h.horaInicio" class="campo" [disabled]="!h.especialidad">
+          <option value="" disabled selected>Desde</option>
+          <option *ngFor="let hora of getHorasParaDia(h.dia)" [value]="hora">{{ hora }}</option>
+        </select>
+
+        <select [(ngModel)]="h.horaFin" class="campo" [disabled]="!h.especialidad">
+          <option value="" disabled selected>Hasta</option>
+          <option *ngFor="let hora of getHorasParaDia(h.dia)" [value]="hora">{{ hora }}</option>
+        </select>
+
+        <select [(ngModel)]="h.duracion" class="campo" [disabled]="!h.especialidad">
+          <option [value]="30">30 minutos</option>
+          <option [value]="60">60 minutos</option>
+        </select>
+
+        <button type="button" class="btn-borrar" (click)="eliminarHorario(i)">🗑️</button>
+      </div>
+
+      <div class="acciones-horarios">
+        <button type="button" class="btn-agregar" (click)="agregarHorario()">➕ Agregar disponibilidad</button>
+        <button type="button" class="btn-guardar" (click)="guardarHorarios()">Guardar horarios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MIS TURNOS -->
+<div *ngIf="!mostrarPerfil">
+  <!-- Filtros -->
+<div class="filtros">
+  <label><strong>🔍 Buscar por cualquier dato:</strong></label>
+  <input [(ngModel)]="busquedaLibre" (ngModelChange)="aplicarFiltros()" placeholder="Buscar..." />
+</div>
+
+
+  <!-- Lista de turnos -->
+  <div class="lista-turnos" *ngIf="turnosFiltrados.length; else sinTurnos">
+<div class="turno-card" *ngFor="let turno of turnosFiltrados" [attr.data-estado]="turno.estado">
+  <p><strong>Paciente:</strong> {{ turno.nombrePaciente }}</p>
+  <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+  <p><strong>Fecha:</strong> {{ turno.fecha | date:'dd/MM/yyyy' }}</p>
+  <p><strong>Hora:</strong> {{ turno.hora }}</p>
+  <p><strong>Estado:</strong> {{ turno.estado }}</p>
+
+<button 
+  *ngIf="turno.estado === 'realizado'" 
+  class="boton-historia" 
+  (click)="mostrarHistoria[turno.id] = !mostrarHistoria[turno.id]">
+  <i class="fas fa-dna"></i> 
+  {{ mostrarHistoria[turno.id] ? 'Ocultar Historia Clínica' : 'Ver Historia Clínica' }}
+</button>
+
+
+<div *ngIf="mostrarHistoria[turno.id] && turno.historia" class="historia-box">
+  <h4>🩺 Historia Clínica</h4>
+  <p><strong>Altura:</strong> {{ turno.historia.altura }} cm</p>
+  <p><strong>Peso:</strong> {{ turno.historia.peso }} kg</p>
+  <p><strong>Presión:</strong> {{ turno.historia.presion }}</p>
+  <p><strong>Temperatura:</strong> {{ turno.historia.temperatura }} °C</p>
+
+  <ul>
+    <li *ngFor="let clave of getClaves(turno.historia.datos_extra)">
+      {{ clave }}: {{ turno.historia.datos_extra[clave] }}
+    </li>
+  </ul>
+</div>
+
+
+  <div class="acciones" *ngIf="
+    puedeAceptar(turno.estado) || 
+    puedeRechazar(turno.estado) || 
+    puedeCancelar(turno.estado) || 
+    turno.estado === 'aceptado' || 
+    turno.calificacionPaciente
+  ">
+    <button *ngIf="puedeAceptar(turno.estado)" (click)="aceptarTurno(turno)">Aceptar</button>
+    <button *ngIf="puedeRechazar(turno.estado)" (click)="rechazarTurno(turno)">Rechazar</button>
+    <button *ngIf="puedeCancelar(turno.estado)" (click)="cancelarTurno(turno)">Cancelar</button>
+    <button *ngIf="turno.estado === 'aceptado'" (click)="finalizarTurno(turno)">Finalizar</button>
+    <button *ngIf="turno.calificacionPaciente" (click)="verResena(turno)">Ver Reseña</button>
+    
+  </div>
+</div>
+
+  </div>
+
+  <!-- Mensaje si no hay turnos -->
+  <ng-template #sinTurnos>
+    <p>No se encontraron turnos con los filtros seleccionados.</p>
+  </ng-template>
+</div>

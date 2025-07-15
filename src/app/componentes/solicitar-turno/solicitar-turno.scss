@@ -1,0 +1,235 @@
+/* Navbar (ya configurada correctamente) */
+.navbar-clinica {
+  background: linear-gradient(to right, #0f172a, #1e3a8a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .logo {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 60px;
+      margin-right: 1rem;
+    }
+
+    .titulo-logo {
+      h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: white;
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: #d1d5db;
+      }
+    }
+  }
+
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+
+    li {
+      button {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      .logout-btn {
+        color: #f87171;
+        border-color: rgba(248, 113, 113, 0.5);
+
+        &:hover {
+          background-color: rgba(248, 113, 113, 0.1);
+        }
+      }
+    }
+  }
+}
+
+/* Estructura general */
+:host {
+  display: block;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #bedafc;
+  min-height: 100vh;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #1e3a8a;
+}
+
+form {
+  max-width: 720px;
+  margin: auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+  margin-top: 1.5rem;
+  color: #1e40af;
+}
+
+/* PROFESIONALES - Botones redondos con imagen y nombre arriba */
+.especialistas-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+button.especialista-card {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: center;
+  margin: 1rem;
+}
+
+button.especialista-card img {
+  width: 90px;
+  height: 90px;
+  border: 2px solid #cbd5e1;
+  object-fit: cover;
+  margin-bottom: 0.5rem;
+}
+
+button.especialista-card.selected img {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px #93c5fd;
+}
+
+button.especialista-card p {
+  font-weight: 500;
+  color: #1e3a8a;
+}
+
+/* ESPECIALIDADES - Cuadrado con bordes redondeados */
+.especialidades-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.especialidades-container button {
+  width: 150px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  background-color: #f3f4f6;
+  margin: 0.5rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.especialidades-container button.selected {
+  background-color: #2563eb;
+  color: white;
+  border-color: #2563eb;
+}
+
+.especialidades-container button img {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 0.3rem;
+}
+
+.boton-dia {
+  width: 110px;
+  height: 110px;
+  padding: 10px 24px;
+  margin: 7px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background-color: #e0e7ff;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.boton-dia.selected {
+  background-color: #1d4ed8;
+  color: white;
+  border-color: #1d4ed8;
+}
+
+/* HORARIOS - Cuadrados con bordes redondeados */
+.horarios-disponibles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.boton-horario {
+  width: 60px;
+  height: 60px;
+  font-weight: 500;
+  border-radius: 10px;
+  background-color: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+}
+
+.boton-horario.selected {
+  background-color: #16a34a;
+  color: white;
+  border-color: #16a34a;
+}
+
+/* Confirmar botón */
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  margin-top: 2rem;
+  background-color: #1d4ed8;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+button[type="submit"]:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+.contenedor-horarios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}

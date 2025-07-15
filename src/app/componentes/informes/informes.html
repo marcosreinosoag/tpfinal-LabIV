@@ -1,0 +1,118 @@
+<div class="admin-container">
+  <!-- Navbar -->
+  <nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+<ul class="navbar-links">
+    <li><button (click)="goTo('admin')">Usuarios</button></li>
+    <li><button (click)="goTo('solicitar-turno-admin')">Solicitar Turno</button></li>
+    <li><button (click)="goTo('registro')">Registrar usuario</button></li>
+    <li><button (click)="goTo('turnos')">Turnos</button></li>
+  <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+</ul>
+</nav>
+<h2 class="titulo-informes">Todos los Informes</h2>
+
+<div class="tabs-dashboard">
+  <button 
+    [class.activa]="seccionActiva === 'logs'" 
+    (click)="cambiarSeccion('logs')">Logs</button>
+
+  <button 
+    [class.activa]="seccionActiva === 'especialidad'" 
+    (click)="cambiarSeccion('especialidad')">Turnos por Especialidad</button>
+
+  <button 
+    [class.activa]="seccionActiva === 'dia'" 
+    (click)="cambiarSeccion('dia')">Turnos por Día</button>
+
+     <button [class.activa]="seccionActiva === 'medico'" 
+     (click)="cambiarSeccion('medico')">Turnos por Médico</button>
+     <button 
+  [class.activa]="seccionActiva === 'finalizados'" 
+  (click)="cambiarSeccion('finalizados')">Turnos Finalizados</button>
+
+</div>
+
+<!-- LOGS -->
+<div *ngIf="seccionActiva === 'logs'" class="seccion">
+  <div class="logs-container">
+    <div class="log-card" *ngFor="let log of logs">
+      <p><strong>Email:</strong> {{ log.email }}</p>
+      <p><strong>Fecha:</strong> {{ log.fecha | date:'dd/MM/yyyy' }}</p>
+      <p><strong>Hora:</strong> {{ log.fecha | date:'hh:mm a' }}</p>
+    </div>
+  </div>
+  <div class="exportar">
+    <button (click)="exportToExcel()">EXPORTAR A EXCEL</button>
+  </div>
+</div>
+
+<!-- GRAFICO ESPECIALIDAD -->
+<div *ngIf="seccionActiva === 'especialidad'" class="seccion">
+  <div class="grafico-contenedor">
+    <canvas id="graficoTurnosEspecialidad"></canvas>
+  </div>
+  <div class="exportar">
+    <button (click)="exportarGraficoAPdf()">EXPORTAR A PDF</button>
+  </div>
+</div>
+
+<!-- GRAFICO DÍA -->
+<div *ngIf="seccionActiva === 'dia'" class="seccion">
+  <div class="grafico-contenedor">
+    <canvas id="graficoTurnosDia"></canvas>
+  </div>
+  <div class="exportar">
+    <button (click)="exportarGraficoPorDiaAPdf()">EXPORTAR A PDF</button>
+  </div>
+</div>
+
+<!-- GRAFICO MÉDICO -->
+<div *ngIf="seccionActiva === 'medico'" class="seccion">
+  <div class="filtros-fecha">
+    <label>Desde: <input type="date" [(ngModel)]="fechaDesde"></label>
+    <label>Hasta: <input type="date" [(ngModel)]="fechaHasta"></label>
+    <button (click)="filtrarTurnosPorMedico()">Filtrar</button>
+  </div>
+
+  <!-- Mostrar si hay datos -->
+<div class="grafico-contenedor" *ngIf="turnosPorMedico.length > 0">
+  <canvas id="graficoTurnosPorMedico"></canvas>
+</div>
+
+
+  <!-- Mensaje si no hay datos -->
+  <div class="grafico-contenedor" *ngIf="turnosPorMedico.length === 0 && fechaDesde && fechaHasta">
+    <p style="text-align: center; margin-top: 2rem;">No hay turnos registrados en ese período.</p>
+  </div>
+
+  <div class="exportar" *ngIf="turnosPorMedico.length > 0">
+    <button (click)="exportarGraficoPorMedicoAPdf()">EXPORTAR A PDF</button>
+  </div>
+</div>
+
+<div *ngIf="seccionActiva === 'finalizados'" class="seccion">
+  <div class="filtros-fecha">
+    <label>Desde: <input type="date" [(ngModel)]="fechaDesdeFinalizados"></label>
+    <label>Hasta: <input type="date" [(ngModel)]="fechaHastaFinalizados"></label>
+    <button (click)="filtrarTurnosFinalizadosPorMedico()">Filtrar</button>
+  </div>
+
+  <div class="grafico-contenedor" *ngIf="turnosFinalizadosPorMedico.length > 0">
+    <canvas id="graficoFinalizadosPorMedico"></canvas>
+  </div>
+
+  <div class="mensaje-vacio" *ngIf="turnosFinalizadosPorMedico.length === 0">
+    No hay turnos finalizados en ese período.
+  </div>
+  <div class="exportar" *ngIf="turnosFinalizadosPorMedico.length > 0">
+  <button (click)="exportarGraficoFinalizadosPorMedicoAPdf()">EXPORTAR A PDF</button>
+</div>
+
+</div>

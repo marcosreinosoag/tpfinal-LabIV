@@ -1,0 +1,271 @@
+/* Estilo global y fondo con imagen y blur */
+.hero-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('../../../../public/medicina.jpg') center/cover no-repeat;
+  backdrop-filter: blur(6px);
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  overflow: hidden;  /* Previene el scroll */
+  padding-top: 100px;
+}
+
+.hero-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 80, 0.5);
+  z-index: 0;
+}
+
+/* Navbar */
+.navbar-clinica {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;  /* Asegura que esté sobre otros elementos */
+  background: linear-gradient(to right, #0f172a, #1e3a8a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 12px 12px;
+}
+
+
+.navbar-clinica .logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-clinica .logo img {
+  height: 60px;
+  margin-right: 1rem;
+}
+
+.navbar-clinica .titulo-logo h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
+}
+
+.navbar-clinica .titulo-logo span {
+  font-size: 0.8rem;
+  color: #d1d5db;
+}
+.navbar-clinica .navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin-right: 60px;
+
+}
+
+.navbar-clinica .navbar-links li {
+  display: flex; 
+}
+
+.navbar-clinica .navbar-links button {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 1rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.navbar-clinica .navbar-links button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-clinica .navbar-links .logout-btn {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.5);
+}
+
+.navbar-clinica .navbar-links .logout-btn:hover {
+  background-color: rgba(248, 113, 113, 0.1);
+}
+
+
+/* === CONTENEDOR PRINCIPAL === */
+.contenedor-historias {
+  position: relative;
+  padding: 3rem;
+  min-height: 100vh;
+  z-index: 0;
+  color: #333;
+  overflow: hidden; 
+  margin-top: 100px;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 3rem;
+  font-size: 2rem;
+  color: #ffffff;
+  font-weight: bold;
+  z-index: 1;
+  position: relative;
+}
+/* === FILTROS DE PACIENTES === */
+.pacientes-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  z-index: 1;
+  position: relative;
+}
+
+.paciente-btn {
+  background: #ffffff;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  padding: 0.75rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.paciente-btn img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.3rem;
+}
+
+.paciente-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* === MODAL === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 15px;
+  z-index: 100;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.modal-content {
+  overflow: hidden; /* Evitar que el contenido se desborde fuera del modal */
+}
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.modal-footer button {
+  padding: 0.5rem 1.5rem;
+  background-color: #00b894;
+  color: white;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-footer button:hover {
+  background-color: #00a78e;
+}
+
+/* === TARJETA DE HISTORIA CLÍNICA === */
+.historia-card {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-width: 300px;
+  flex-shrink: 0;
+  margin-right: 1rem; /* Añadir margen entre los elementos */
+}
+
+.historias-grid {
+  display: flex;
+  flex-wrap: nowrap; /* No permitir que los elementos se envuelvan */
+  overflow-x: auto; /* Habilitar desplazamiento horizontal */
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
+
+
+.resena-btn {
+  margin-top: 1rem;
+  background-color: #00b894;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.resena-btn:hover {
+  background-color: #009e80;
+}
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.carousel-btn-left {
+  left: 10px;
+}
+
+.carousel-btn-right {
+  right: 10px;
+}
+
+.carousel-btn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}

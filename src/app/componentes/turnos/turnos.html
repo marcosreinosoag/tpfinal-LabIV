@@ -1,0 +1,57 @@
+<div class="admin-container">
+  <!-- Navbar -->
+  <nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+<ul class="navbar-links">
+    <li><button (click)="goTo('informes')">Informes</button></li>      
+      <li><button (click)="goTo('solicitar-turno-admin')">Solicitar Turno</button></li>
+      <li><button (click)="goTo('registro')">Registrar usuario</button></li>
+      <li><button (click)="goTo('admin')">Usuarios</button></li>  
+  <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+</ul>
+</nav>
+
+<div class="admin-turnos-container" *ngIf="esAdmin">
+  <h2>Gestión de Turnos</h2>
+
+  <!-- Filtros -->
+<div class="filtro-unico">
+    <input
+      type="text"
+      [(ngModel)]="busquedaNombre"
+      placeholder="Buscar por paciente, especialista o especialidad..."
+    />
+
+    <input
+      type="date"
+      [(ngModel)]="busquedaFecha"
+      placeholder="Buscar por fecha"
+    />
+  </div>
+<div class="turnos-grid">
+  <div *ngFor="let turno of turnosFiltrados()" class="turno-card" [ngClass]="turno.estado">
+    <p><strong>Paciente:</strong> {{ turno.pacienteNombre }}</p>
+    <p><strong>Especialista:</strong> {{ turno.especialistaNombre }}</p>
+    <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+    <p><strong>Fecha:</strong> {{ turno.fecha | date:'dd/MM/yyyy' }}</p>
+    <p><strong>Hora:</strong> {{ turno.hora }}</p>
+    <p><strong>Estado:</strong> {{ turno.estado }}</p>
+
+    <div class="acciones-turno" *ngIf="puedeCancelar(turno)">
+      <button class="btn-azul" (click)="mostrarCancelar(turno.id)">Cancelar turno</button>
+      <div *ngIf="comentarioCancelacion[turno.id] !== undefined">
+        <textarea [(ngModel)]="comentarioCancelacion[turno.id]" placeholder="Motivo de cancelación"></textarea>
+        <button class="btn-rojo" (click)="cancelarTurno(turno.id)">Confirmar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>

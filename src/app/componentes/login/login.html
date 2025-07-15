@@ -1,0 +1,44 @@
+<nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+  <ul class="navbar-links">
+    <li> <button class="registro-btn" (click)="goTo('registro')">
+        Registrarse
+      </button></li>
+  </ul>
+</nav>
+
+<!-- Contenedor principal -->
+<div class="hero-background">
+  <div class="login-wrapper">
+    <div class="login-card">
+      <h2>Iniciar sesión</h2>
+
+      <!-- Formulario -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="Ingresá tu correo" />
+
+        <label for="password">Contraseña</label>
+        <input id="password" type="password" formControlName="password" placeholder="Ingresá tu contraseña" />
+
+        <button type="submit" [disabled]="loginForm.invalid">Iniciar sesión</button>
+
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      </form>
+    </div>
+
+    <div class="quick-access-grid">
+      <button *ngFor="let user of quickAccessUsers"
+              (click)="onQuickAccessLogin(user.email, user.password)"
+              class="quick-user-button">
+        <img [src]="user.fotoPerfil || '/assets/images/default.jpg'" alt="usuario" />
+      </button>
+    </div>
+  </div>
+</div>

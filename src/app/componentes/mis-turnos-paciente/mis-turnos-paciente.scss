@@ -1,0 +1,467 @@
+/* Estilo general */
+:host {
+  display: block;
+  padding: 2rem;
+  background-color: #bedafc; 
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Navbar */
+.navbar-clinica {
+  background: linear-gradient(to right, #0f172a, #1e3a8a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .logo {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 60px;
+      margin-right: 1rem;
+    }
+
+    .titulo-logo {
+      h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: white;
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: #d1d5db;
+      }
+    }
+  }
+
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+
+    li {
+      button {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      .logout-btn {
+        color: #f87171;
+        border-color: rgba(248, 113, 113, 0.5);
+
+        &:hover {
+          background-color: rgba(248, 113, 113, 0.1);
+        }
+      }
+    }
+  }
+}
+
+/* PERFIL */
+.perfil-container {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.foto-perfil {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+  border: 2px solid #cbd5e1;
+}
+
+.datos-usuario p {
+  margin: 0.3rem 0;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+/* TURNOS */
+:host {
+  display: block;
+  padding: 2rem;
+  background-color: #bedafc; 
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.turnos-wrapper {
+  max-width: 1200px;
+  margin: auto;
+}
+
+h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #1e3a8a;
+}
+
+/* Filtros */
+.filtro-unico {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.filtros-especialidad,
+.filtros-doctor {
+  flex: 1 1 45%;
+  background-color: #f1f5f9;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filtros-especialidad h3,
+.filtros-doctor h3 {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.filtros-especialidad button,
+.filtros-doctor button {
+  margin: 0.2rem;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  border: 1px solid #cbd5e1;
+  background-color: #e5e7eb;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filtros-especialidad button:hover,
+.filtros-doctor button:hover {
+  background-color: #dbeafe;
+}
+
+.filtros-especialidad button.selected,
+.filtros-doctor button.selected {
+  background-color: #1e3a8a;
+  color: white;
+  font-weight: bold;
+}
+
+
+/* Tarjetas de turnos */
+.turno-card {
+  background-color: white;
+  border-left: 5px solid #cbd5e1;
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+
+  &.pendiente    { border-left-color: #fbbf24; }
+  &.cancelado    { border-left-color: #ef4444; }
+  &.realizado    { border-left-color: #3b82f6; }
+  &.rechazado    { border-left-color: #6b7280; }
+
+  p {
+    margin: 0.25rem 0;
+    font-size: 0.95rem;
+    color: #374151;
+  }
+
+  .estado {
+    margin-top: 0.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: #1f2937;
+  }
+
+  .acciones {
+    margin-top: 1rem;
+
+    textarea {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    button {
+      margin-top: 0.5rem;
+      margin-right: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      background-color: #e5e7eb;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-weight: 500;
+
+      &:hover {
+        background-color: #d1d5db;
+      }
+    }
+  }
+}
+/* Estilo de la sección de historias clínicas */
+.historias-clinicas {
+  margin-top: 2rem;
+}
+
+h3 {
+  color: #1e3a8a;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+/* Estilo de cada tarjeta de historia clínica */
+.card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* Cabecera de la tarjeta */
+.card-header {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card-header p {
+  margin: 0.3rem 0;
+  color: #374151;
+  font-size: 1rem;
+}
+
+/* Cuerpo de la tarjeta */
+.card-body p {
+  margin: 0.3rem 0;
+  color: #374151;
+  font-size: 1rem;
+}
+
+.card-body ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0.5rem 0;
+}
+
+.card-body li {
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.historial-header {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: #f1f5f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+  h3 {
+    margin-bottom: 1rem;
+    color: #1e3a8a;
+    font-size: 1.5rem;
+  }
+
+  .descarga-contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-descarga-total {
+      background-color: #10b981;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #059669;
+      }
+    }
+
+    .descarga-individual {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+
+      label {
+        font-size: 1rem;
+        color: #374151;
+      }
+
+      select {
+        padding: 0.4rem 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+
+      .btn-descarga-por {
+        background-color: #3b82f6;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: #2563eb;
+        }
+
+        &:disabled {
+          background-color: #94a3b8;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+
+/* Pie de la tarjeta */
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.card-footer button {
+  background-color: #34d399;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.card-footer button:hover {
+  background-color: #10b981;
+}
+
+.btn-download {
+  font-size: 1rem;
+}
+
+/* Añadido para una animación más fluida */
+.card-footer button:active {
+  transform: scale(0.95);
+}
+/* Botón para descargar todo el historial clínico */
+.btn-download-all {
+  background-color: #4caf50;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: background 0.3s ease;
+  margin-bottom: 2rem; /* Espacio entre el botón y las tarjetas */
+}
+
+.btn-download-all:hover {
+  background-color: #388e3c;
+}
+
+.card-footer button:active {
+  transform: scale(0.95);
+}
+.filtro-busqueda-libre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1.5rem 0;
+
+  label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #1e3a8a;
+    font-size: 1rem;
+  }
+
+  input {
+    width: 300px; 
+    max-width: 90%;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+  }
+
+  input:focus {
+    border-color: #1e3a8a;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(30, 58, 138, 0.2);
+  }
+}
+
+.btn-diagnostico {
+  background-color: #4e6dea;
+  border: 1px solid #ccc;
+  padding: 4px 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #ddd;
+  }
+}

@@ -1,0 +1,236 @@
+/* Estilo global y fondo con imagen y blur */
+.hero-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('../../../../public/medicina.jpg') center/cover no-repeat;
+  backdrop-filter: blur(6px);
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  overflow-y: auto;
+  padding-top: 100px;
+}
+
+.hero-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 80, 0.5);
+  z-index: 0;
+}
+
+/* Navbar */
+.navbar-clinica {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: linear-gradient(to right, #0f172a, #1e3a8a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 12px 12px;
+}
+
+.navbar-clinica .logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-clinica .logo img {
+  height: 60px;
+  margin-right: 1rem;
+}
+
+.navbar-clinica .titulo-logo h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
+}
+
+.navbar-clinica .titulo-logo span {
+  font-size: 0.8rem;
+  color: #d1d5db;
+}
+
+/* Estilo para selector y formulario */
+.selector-contenedor {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+  padding: 2rem;
+  max-width: 700px;
+  width: 100%;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.selector-contenedor h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  color: #ffffff;
+  margin-bottom: 2rem;
+}
+
+.selector-opciones {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.card-opcion {
+  width: 270px;
+  height: 290px;
+  background: #f8f9fc;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  text-align: center;
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-opcion img {
+  width: 250px;
+  height: 250px;
+  margin-bottom: 1rem;
+  object-fit: contain;
+}
+
+.card-opcion span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.card-opcion:hover {
+  border-color: #2563eb;
+  transform: scale(1.05);
+  background-color: #eef4ff;
+}
+
+.form-container {
+  position: relative;
+  z-index: 2;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 700px;
+  width: 100%;
+  margin-bottom: 2rem;
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.2);
+}
+
+form label {
+  margin-top: 1rem;
+}
+
+form .row {
+  margin-bottom: 1.2rem;
+}
+
+.row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.row > div {
+  flex: 1;
+}
+
+label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  display: block;
+  color: #1f2937;
+}
+
+input[type='text'], input[type='number'], input[type='email'], input[type='password'] {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 0.1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+}
+
+button[type='submit'], .add-button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  width: 100%;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button[type='submit']:hover, .add-button:hover {
+  background-color: #1d4ed8;
+}
+
+small {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  display: block;
+}
+
+input.ng-invalid.ng-touched {
+  border-color: red;
+}
+
+input.ng-valid.ng-touched {
+  border-color: green;
+}
+
+.captcha-container {
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 3px solid rgba(0,0,0,0.2);
+  border-top-color: rgba(0,0,0,0.8);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

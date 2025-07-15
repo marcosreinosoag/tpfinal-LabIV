@@ -1,0 +1,176 @@
+/* Fondo fijo */
+.hero-background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('../../../../public/medicina.jpg') center/cover no-repeat;
+  backdrop-filter: blur(6px);
+  z-index: -1;
+}
+
+.hero-background::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 80, 0.5); /* Capa oscura */
+  backdrop-filter: blur(6px);
+  z-index: -1;
+}
+
+/* Estilo de la barra de navegación */
+.navbar-clinica {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: linear-gradient(to right, #0f172a, #1e3a8a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 12px 12px;
+}
+
+.navbar-clinica .logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-clinica .logo img {
+  height: 60px;
+  margin-right: 1rem;
+}
+
+.navbar-clinica .titulo-logo h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
+}
+
+.navbar-clinica .titulo-logo span {
+  font-size: 0.8rem;
+  color: #d1d5db;
+}
+
+form {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  margin-top: 100px;
+
+}
+
+h2, h3 {
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #555;
+  font-size: 16px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: #1976d2;
+  outline: none;
+  box-shadow: 0 0 5px rgba(25, 118, 210, 0.4);
+}
+
+button {
+  margin-top: 20px;
+  margin-right: 10px;
+  padding: 12px 18px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #1565c0;
+}
+
+button[type="button"] {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+button[type="button"]:hover {
+  background-color: #b0b0b0;
+}
+
+hr {
+  margin: 30px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+p {
+  text-align: center;
+  font-style: italic;
+  color: #777;
+  font-size: 14px;
+}
+
+.ng-invalid.ng-touched input {
+  border-color: red;
+}
+
+button:disabled {
+  background-color: #bbb;
+  cursor: not-allowed;
+}
+
+.fila-dato-extra {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.fila-dato-extra input {
+  flex-grow: 1;
+}
+
+.fila-dato-extra button {
+  background-color: #f44336;
+  color: white;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.fila-dato-extra button:hover {
+  background-color: #d32f2f;
+}

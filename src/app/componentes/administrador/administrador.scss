@@ -1,0 +1,494 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #bedafc; 
+}
+
+/* Contenedor general */
+.admin-container {
+  max-width: 1300px;
+  margin: auto;
+  padding: 20px; 
+  background-color: #bedafc; 
+}
+
+/* Navbar */
+.navbar-clinica {
+  background: linear-gradient(to right, #0f172a, #1e3a8a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .logo {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 60px;
+      margin-right: 1rem;
+    }
+
+    .titulo-logo {
+      h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: white;
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: #d1d5db;
+      }
+    }
+  }
+
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+
+    li {
+      button {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      .logout-btn {
+        color: #f87171;
+        border-color: rgba(248, 113, 113, 0.5);
+
+        &:hover {
+          background-color: rgba(248, 113, 113, 0.1);
+        }
+      }
+    }
+  }
+}
+
+/* Título */
+h2 {
+  text-align: center;
+  color: #333;
+  margin-top: 20px;
+}
+
+/* Tabla de usuarios */
+/* Tabla general */
+.user-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+
+/* Encabezados */
+.user-table th {
+  background: linear-gradient(to right, #1e3a8a, #3b82f6);
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  padding: 14px;
+  text-align: center;
+}
+
+/* Celdas */
+.user-table td {
+  padding: 16px 12px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Zebra striping */
+.user-table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Imagen redonda */
+.user-img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #1e3a8a;
+}
+
+/* Botones de acción */
+.user-table button {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+}
+
+.user-table button:hover {
+  filter: brightness(1.1);
+}
+
+button[ng-reflect-ng-if="true"] {
+  background-color: #10b981; /* Verde */
+  color: white;
+}
+
+button[ng-reflect-ng-if="false"] {
+  background-color: #ef4444; /* Rojo */
+  color: white;
+}
+
+/* Visualización especialidades */
+.especialidad-pill {
+  display: inline-block;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 4px 8px;
+  margin: 2px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+/* Botones especiales para acciones */
+.btn-habilitar {
+  background-color: #10b981; // verde esmeralda
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.btn-habilitar:hover {
+  background-color: #059669;
+}
+
+.btn-deshabilitar {
+  background-color: #ef4444; // rojo fuerte
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.btn-deshabilitar:hover {
+  background-color: #dc2626;
+}
+
+
+
+/* Formulario para crear admin */
+.create-admin-container {
+  margin-top: 40px;
+  background: white;
+  border-radius: 16px;
+  max-width: 680px; /* más ancho */
+  margin-inline: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 90%;
+}
+
+
+.create-admin-container h3 {
+  text-align: center;
+  color: #1e3a8a;
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.create-admin-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.create-admin-container label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #334155;
+  margin-bottom: 0.25rem;
+}
+
+.create-admin-container input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  background-color: #f8fafc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%; 
+}
+
+
+.create-admin-container input:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.create-admin-container button[type="submit"] {
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.1s;
+}
+
+.create-admin-container button[type="submit"]:hover {
+  background-color: #2563eb;
+}
+
+.create-admin-container button[type="submit"]:active {
+  transform: scale(0.98);
+}
+
+.create-admin-container button[type="button"] {
+  background-color: transparent;
+  color: #3b82f6;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.25rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.create-admin-container button[type="button"]:hover {
+  text-decoration: underline;
+}
+
+
+.exportar-excel-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.btn-exportar {
+  padding: 10px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2196f3;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-exportar:hover {
+  background-color: #1976d2;
+}
+
+/* Error */
+.error-message {
+  color: red;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.modal-historia {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+
+  &.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &.hide {
+    opacity: 0;
+  }
+
+  .modal-content {
+    background: #fff;
+    padding: 2rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+
+    h3 {
+      font-size: 1.4rem;
+      margin: 0;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .btn-close, .btn-pdf {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-close {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-pdf {
+      background-color: #007bff;
+      color: white;
+    }
+  }
+
+  .card-historia {
+    border: 1px solid #ccc;
+    border-left: 6px solid #007bff;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background-color: #f9f9f9;
+
+    .card-header {
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+
+    .card-body p {
+      margin: 0.3rem 0;
+    }
+
+    ul {
+      margin: 0.5rem 0 0 1rem;
+      padding-left: 1rem;
+    }
+  }
+}
+.paciente-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: start;
+  margin: 2rem 0;
+}
+
+.favbutton {
+  background-color: white;
+  border: none;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 0;
+}
+
+.favbutton:hover {
+  transform: scale(1.1);
+}
+
+.fav-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 2px;
+}
+
+.nombre-paciente {
+  font-size: 0.7rem;
+  color: #111827;
+  text-align: center;
+  white-space: nowrap;
+}
+.paciente-toggle-container {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.btn-toggle-pacientes {
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-toggle-pacientes:hover {
+  background-color: #3b82f6;
+}
+input.ng-touched.ng-invalid {
+  border-color: #ef4444; /* rojo */
+  background-color: #ffecec;
+}
+
+input.ng-touched.ng-valid {
+  border-color: #10b981; /* verde */
+  background-color: #e7f9f1;
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: -6px;
+  margin-bottom: 6px;
+}

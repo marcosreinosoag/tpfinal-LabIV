@@ -1,0 +1,236 @@
+<div class="admin-container">
+  <!-- Navbar -->
+  <nav class="navbar-clinica">
+  <div class="logo">
+    <img src="assets/images/icono.ico" alt="Clínica" />
+    <div class="titulo-logo">
+      <h2>Clínica OnLine</h2>
+      <span>Especialistas en Salud</span>
+    </div>
+  </div>
+<ul class="navbar-links">
+  <li><button (click)="goTo('informes')">Informes</button></li>
+      <li><button (click)="goTo('solicitar-turno-admin')">Solicitar Turno</button></li>
+      <li><button (click)="goTo('registro')">Registrar usuario</button></li>
+       <li><button (click)="goTo('turnos')">Turnos</button></li>
+      <li><button (click)="toggleCreateAdminForm()">Crear Administrador</button></li>
+  <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+</ul>
+</nav>
+
+  <h2 *ngIf="modo === 'tabla'">Administrar Usuarios</h2>
+
+
+<div class="paciente-toggle-container" *ngIf="modo === 'tabla'">
+  <button class="btn-toggle-pacientes" (click)="mostrarPacientes = !mostrarPacientes">
+    👤 Pacientes
+  </button>
+</div>
+
+
+<div class="paciente-grid" *ngIf="mostrarPacientes">
+  <button 
+  *ngFor="let paciente of pacientes"
+  class="favbutton" 
+  (click)="descargarTurnosDirecto(paciente.id)"
+>
+    <img 
+      *ngIf="paciente.fotoPerfil" 
+      [src]="paciente.fotoPerfil" 
+      alt="foto" 
+      class="fav-img"
+    />
+    <span class="nombre-paciente">{{ paciente.nombre }}</span>
+  </button>
+</div>
+
+
+
+  <!-- Mostrar mensaje de error si existe -->
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- Tabla de usuarios -->
+<div class="user-table-container" *ngIf="modo === 'tabla' && users.length">
+  
+  <div class="exportar-excel-container">
+    <button class="btn-exportar" (click)="exportarUsuariosAExcel()">
+      📥 Exportar usuarios a Excel
+    </button>
+  </div>
+
+  <table class="user-table">
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Edad</th>
+          <th>DNI</th>
+          <th>Mail</th>
+          <th>Rol</th>
+          <th>Obra Social</th>
+          <th>Especialidad</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>
+            <img *ngIf="user.fotoPerfil" 
+     [src]="user.fotoPerfil" 
+     alt="Foto de perfil" 
+     class="user-img" 
+     appHoverZoom />
+          </td>
+          <td>{{ user.nombre | tolowercase }}</td>
+          <td>{{ user.apellido | tolowercase }}</td>
+          <td>{{ user.edad }}</td>
+          <td>{{ (user.dni + '') | formatodni }}</td>
+          <td>{{ user.mail}}</td>
+          <td>{{ user.rol }}</td>
+          <td>{{ user.obraSocial | tolowercase }}</td>
+          <td>
+          <ng-container *ngIf="isArray(user.especialidades); else textoPlano">
+            <span class="especialidad-pill" *ngFor="let esp of user.especialidades">
+              {{ esp }}
+            </span>
+          </ng-container>
+          <ng-template #textoPlano>
+            {{ user.especialidades }}
+          </ng-template>
+          </td>
+         <td>{{ user.estado | estadoColor }}</td>
+         <td>
+  <ng-container *ngIf="user.rol?.toLowerCase() === 'especialista'">
+    <button
+      *ngIf="user.estado === 'inhabilitado'"
+      (click)="toggleUserStatus(user.id, true)"
+      class="btn-habilitar"
+    >
+      ✅ Habilitar
+    </button>
+    <button
+      *ngIf="user.estado === 'activo'"
+      (click)="toggleUserStatus(user.id, false)"
+      class="btn-deshabilitar"
+    >
+      ❌ Inhabilitar
+    </button>
+  </ng-container>
+  <ng-container *ngIf="user.rol?.toLowerCase() === 'paciente'">
+  <button class="btn-historia" (click)="verHistoriaClinica(user.id)">🩺 Ver Historia Clínica</button>
+</ng-container>
+
+</td>         
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+ <!-- MODAL Historia Clínica -->
+<div 
+  class="modal-historia"
+  *ngIf="mostrarModalHistoria"
+  [ngClass]="{ 'show': mostrarModalHistoria, 'hide': !mostrarModalHistoria }"
+>
+
+
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>🩺 Historia Clínica de {{ pacienteSeleccionado?.nombre }} {{ pacienteSeleccionado?.apellido }}</h3>
+      <div class="modal-actions">
+        <button class="btn-close" (click)="mostrarModalHistoria = false">❌ Cerrar</button>
+        <button class="btn-pdf" (click)="descargarTurnosPaciente()">📊 Descargar Turnos en Excel</button>
+      </div>
+    </div>
+
+    <div *ngFor="let h of historialSeleccionado" class="card-historia">
+      <div class="card-header">
+        <p><strong>🗓 Fecha:</strong> {{ h.fecha | date:'fullDate' }} {{ h.fecha | date:'shortTime' }}</p>
+        <p><strong>🔬 Especialidad:</strong> {{ datosTurno(h.turno_id)?.especialidad }}</p>
+      </div>
+      <div class="card-body">
+        <p><strong>📏 Altura:</strong> {{ h.altura }} cm</p>
+        <p><strong>⚖️ Peso:</strong> {{ h.peso }} kg</p>
+        <p><strong>💓 Presión:</strong> {{ h.presion }}</p>
+        <p><strong>🌡 Temperatura:</strong> {{ h.temperatura }} °C</p>
+
+        <div *ngIf="h.datos_extra">
+          <p><strong>📝 Datos adicionales:</strong></p>
+          <ul>
+            <li *ngFor="let clave of getClaves(h.datos_extra)">
+              {{ clave }}: {{ h.datos_extra[clave] }}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  <!-- Formulario para crear administrador -->
+  <div *ngIf="modo === 'crear-admin'" class="create-admin-container">
+    <h3>Crear Administrador</h3>
+    <form [formGroup]="formAdmin" (ngSubmit)="createUser(formAdmin.value)">
+<label for="nombre">Nombre</label>
+<input id="nombre" formControlName="nombre" required appAutoFocus />
+<div class="error-text" *ngIf="formAdmin.get('nombre')?.touched && formAdmin.get('nombre')?.invalid">
+  Ingrese solo letras.
+</div>
+
+<label for="apellido">Apellido</label>
+<input id="apellido" formControlName="apellido" required />
+<div class="error-text" *ngIf="formAdmin.get('apellido')?.touched && formAdmin.get('apellido')?.invalid">
+  Ingrese solo letras.
+</div>
+
+<label for="edad">Edad</label>
+<input id="edad" formControlName="edad" required />
+<div class="error-text" *ngIf="formAdmin.get('edad')?.touched && formAdmin.get('edad')?.invalid">
+  Ingrese solo numeros.
+</div>
+
+<label for="dni">DNI</label>
+<input id="dni" formControlName="dni" required />
+<div class="error-text" *ngIf="formAdmin.get('dni')?.touched && formAdmin.get('dni')?.invalid">
+  el DNI debe tener 8 dígitos.
+</div>
+
+<label for="mail">Email</label>
+<input id="mail" formControlName="mail" required />
+<div class="error-text" *ngIf="formAdmin.get('mail')?.touched && formAdmin.get('mail')?.invalid">
+  Ingrese un correo electrónico válido.
+</div>
+
+
+<label for="password">Contraseña</label>
+
+<div style="display: flex; align-items: center; gap: 0.5rem;">
+  <input id="password" type="password" formControlName="password" required />
+  <button type="button" appMostrarPassword style="border: none; background: none; cursor: pointer;">👁️</button>
+</div>
+
+<div class="error-text" *ngIf="formAdmin.get('password')?.touched && formAdmin.get('password')?.invalid">
+  Mínimo 6 caracteres.
+</div>
+
+
+<label for="fotoPerfil">Foto de Perfil</label>
+<input
+  id="fotoPerfil"
+  type="file"
+  (change)="onFileSelected($event)"
+  required
+  accept="image/*"
+/>
+      <button type="submit" [disabled]="formAdmin.invalid">Crear Administrador</button>
+      <button type="button" (click)="volverATabla()">← Volver</button>
+
+    </form>
+  </div>
+</div>

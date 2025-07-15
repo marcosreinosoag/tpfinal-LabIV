@@ -1,0 +1,292 @@
+/* Navbar */
+.navbar-clinica {
+  background: linear-gradient(to right, #0f172a, #1e3a8a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  .logo {
+    display: flex;
+    align-items: center;
+
+    img {
+      height: 60px;
+      margin-right: 1rem;
+    }
+
+    .titulo-logo {
+      h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: white;
+      }
+
+      span {
+        font-size: 0.8rem;
+        color: #d1d5db;
+      }
+    }
+  }
+
+  .navbar-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+
+    li {
+      button {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background 0.2s;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+
+      .logout-btn {
+        color: #f87171;
+        border-color: rgba(248, 113, 113, 0.5);
+
+        &:hover {
+          background-color: rgba(248, 113, 113, 0.1);
+        }
+      }
+    }
+  }
+}
+
+.admin-turnos-container {
+ max-width: 1000px;
+  width: 100%;
+  margin: auto;
+  padding: 2rem;
+  background-color: #bedafc;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  font-family: 'Segoe UI', sans-serif;
+
+  h2 {
+    font-size: 1.8rem;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .filtro-unico {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+
+    h3 {
+      font-size: 1rem;
+      color: #475569;
+      margin-bottom: 0.5rem;
+    }
+
+    button {
+      background-color: #e2e8f0;
+      border: none;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      font-weight: 500;
+      color: #334155;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #cbd5e1;
+      }
+
+      &.selected {
+        background-color: #3b82f6;
+        color: white;
+      }
+    }
+     input[type="text"],
+     input[type="date"] {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    width: 280px;
+    font-size: 0.95rem;
+    color: #1e293b;
+    transition: box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #3b82f6;
+    }
+  }
+  }
+
+}
+
+.turnos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  justify-items: center;
+}
+
+
+
+.turno-card {
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+  border-left: 6px solid transparent;
+
+  p {
+    margin: 0.3rem 0;
+    font-size: 0.95rem;
+    color: #1e293b;
+
+    strong {
+      color: #0f172a;
+    }
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  &.pendiente {
+    background-color: #fef9c3; // amarillo suave
+    border-left-color: #facc15;
+  }
+
+  &.aceptado {
+    background-color: #d1fae5; // verde suave
+    border-left-color: #10b981;
+  }
+
+  &.cancelado {
+    background-color: #fee2e2; // rojo claro
+    border-left-color: #ef4444;
+  }
+
+  &.realizado {
+    background-color: #e0e7ff; // violeta claro
+    border-left-color: #6366f1;
+  }
+
+  .acciones-turno {
+    margin-top: 1rem;
+
+    button {
+      margin-right: 0.5rem;
+    }
+
+    .btn-azul {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #2563eb;
+      }
+    }
+
+    .btn-rojo {
+      background-color: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #dc2626;
+      }
+    }
+
+    textarea {
+      width: 100%;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-size: 0.9rem;
+      border: 1px solid #cbd5e1;
+      resize: vertical;
+    }
+  }
+}
+.filtro-unico {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .filtros-especialidad {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+
+    h3 {
+      width: 100%;
+      text-align: center;
+      font-size: 1.1rem;
+      color: #334155;
+      margin-bottom: 0.5rem;
+    }
+
+    button {
+      background-color: #e2e8f0;
+      border: none;
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      font-weight: 500;
+      color: #334155;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: #cbd5e1;
+      }
+
+      &.selected {
+        background-color: #3b82f6;
+        color: white;
+      }
+    }
+  }
+
+  input[type="text"] {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    width: 280px;
+    font-size: 0.95rem;
+    color: #1e293b;
+    transition: box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px #3b82f6;
+    }
+  }
+}

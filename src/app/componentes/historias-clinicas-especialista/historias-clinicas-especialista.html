@@ -1,0 +1,72 @@
+<div class="hero-background">
+  <nav class="navbar-clinica">
+    <div class="logo">
+      <img src="assets/images/icono.ico" alt="Clínica" />
+      <div class="titulo-logo">
+        <h2>Clínica OnLine</h2>
+        <span>Especialistas en Salud</span>
+      </div>
+    </div>
+    <ul class="navbar-links">
+      <li><button (click)="goTo('mis-turnos-especialista')">Mi Perfil</button></li>
+      <li><button (click)="goTo('historias-clinicas-especialista')">Pacientes</button></li>
+      <li><button class="logout-btn" (click)="logout()">Cerrar sesión</button></li>
+    </ul>
+  </nav>
+  <div class="contenedor-historias">
+    <h2>Historia Clínica</h2>
+
+    <!-- PACIENTES -->
+    <div class="pacientes-grid">
+      <button *ngFor="let paciente of pacientesUnicos" (click)="abrirModalPorPaciente(paciente.id)"
+        class="paciente-btn">
+        <img [src]="paciente.foto || 'assets/images/user-placeholder.png'" alt="Foto" />
+        <span>{{ paciente.nombre }}</span>
+      </button>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" *ngIf="historiasDelPaciente.length" (click)="cerrarModal()"></div>
+    <div class="modal" *ngIf="historiasDelPaciente.length">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <button class="carousel-btn carousel-btn-left" (click)="scrollCarrusel('left')">&#8592;</button>
+        <h2>Historia Clínica de {{ nombrePaciente(historiasDelPaciente[0].paciente_id) }}</h2>
+        <div class="ultimos-turnos">
+          <h3>Últimos 3 turnos</h3>
+          <ul>
+            <li *ngFor="let turno of ultimosTurnos">
+              <strong>Fecha:</strong> {{ datosTurno(turno.turno_id)?.fecha | date:'dd/MM/yyyy' }} -
+              <strong>Hora:</strong> {{ datosTurno(turno.turno_id)?.hora }} -
+              <strong>Especialidad:</strong> {{ datosTurno(turno.turno_id)?.especialidad }}
+            </li>
+          </ul>
+        </div>
+        <div class="historias-grid">
+          <div class="historia-card" *ngFor="let h of historiasDelPaciente">
+            <p><strong>Especialidad:</strong> {{ datosTurno(h.turno_id)?.especialidad }}</p>
+            <p><strong>Fecha:</strong> {{ datosTurno(h.turno_id)?.fecha | date:'dd/MM/yyyy' }}</p>
+            <p><strong>Hora:</strong> {{ datosTurno(h.turno_id)?.hora }}</p>
+            <p><strong>Altura:</strong> {{ h.altura }} cm</p>
+            <p><strong>Peso:</strong> {{ h.peso }} kg</p>
+            <p><strong>Presión:</strong> {{ h.presion }}</p>
+            <p><strong>Temperatura:</strong> {{ h.temperatura }} °C</p>
+
+            <p><strong>Otros Datos</strong></p>
+            <ul>
+              <li *ngFor="let clave of getClaves(h.datos_extra)">
+                {{ clave }}: {{ h.datos_extra[clave] }}
+              </li>
+            </ul>
+            <button *ngIf="datosTurno(h.turno_id)?.calificacionPaciente" class="resena-btn">
+              Reseña: {{ datosTurno(h.turno_id)?.calificacionPaciente }}
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button (click)="cerrarModal()">Cerrar</button>
+        </div>
+      </div>
+      <button class="carousel-btn carousel-btn-right" (click)="scrollCarrusel('right')">&#8594;</button>
+    </div>
+  </div>

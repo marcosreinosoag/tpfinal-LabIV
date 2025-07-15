@@ -1,0 +1,211 @@
+/* Global Reset */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f1f5f9;
+  overflow: hidden;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+.quick-access-grid {
+  margin-top: 2rem; /* más espacio arriba */
+}
+
+/* Navbar fijo */
+.navbar-clinica {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: linear-gradient(to right, #0f172a, #1e3a8a);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 0 0 12px 12px;
+}
+
+.navbar-clinica .logo {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-clinica .logo img {
+  height: 60px;
+  margin-right: 1rem;
+}
+
+.navbar-clinica .titulo-logo h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
+}
+
+.navbar-clinica .titulo-logo span {
+  font-size: 0.8rem;
+  color: #d1d5db;
+}
+
+.navbar-clinica .navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.navbar-clinica .navbar-links li button {
+  background-color: #3b82f6;
+  color: white;
+  font-size: 0.95rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease-in-out;
+}
+
+.navbar-clinica .navbar-links li button:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+}
+.login-wrapper {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column; /* ⬅️ Agregá esto */
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem; /* Espacio entre tarjeta y accesos rápidos */
+}
+
+.hero-background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url('../../../../public/medicina.jpg') center/cover no-repeat;
+  backdrop-filter: blur(6px);
+  z-index: -1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 80, 0.5); // capa oscura
+    backdrop-filter: blur(6px);
+    z-index: -1;
+  }
+}
+
+
+/* Login card moderna */
+.login-card {
+  background-color: white;
+  padding: 3rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.login-card h2 {
+  font-size: 26px;
+  margin-bottom: 1.5rem;
+  color: #1e3a8a;
+}
+
+.quick-access-grid {
+  display: flex;               
+  justify-content: center;    
+  align-items: center;
+  gap: 1rem;                    
+  margin-top: 1rem;
+  flex-wrap: wrap;             
+}
+
+.quick-user-button {
+  border: none;
+  background: #e2e8f0;
+  border-radius: 10px;
+  height: 70px;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.quick-user-button:hover {
+  background-color: #cbd5e1;
+}
+
+.quick-user-button img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+}
+
+.login-form label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.login-form input {
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.login-form button {
+  padding: 12px;
+  background-color: #1d4ed8;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.login-form button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
+}
