@@ -30,9 +30,6 @@
 - **Angular** (framework principal)
 - **Supabase** (autenticación, base de datos, funciones edge)
 - **Firebase Hosting**
-- **SweetAlert2** (alertas)
-- **Google reCAPTCHA v2**
-- **ExcelJS / jsPDF** (exportaciones)
 
 ---
 
@@ -41,19 +38,25 @@
 ### 👤 Paciente
 - Registrarse y verificar cuenta.
 - Solicitar turnos y filtrarlos.
+  <img width="1306" height="907" alt="image" src="https://github.com/user-attachments/assets/3254dd6e-19ee-4a0f-b5c8-d97afd16f77d" />
 - Cancelar, calificar y ver reseñas.
+  <img width="1829" height="730" alt="image" src="https://github.com/user-attachments/assets/4b9c64b2-9d70-4eb2-a977-43e377b18010" />
 - Ver su perfil y su historia clínica.
-
+  <img width="1844" height="911" alt="image" src="https://github.com/user-attachments/assets/9d9430ef-cf04-4977-a894-1577b8053cf7" />
 ### 👨‍⚕️ Especialista
 - Ver sus turnos asignados y filtrarlos.
+<img width="1843" height="696" alt="image" src="https://github.com/user-attachments/assets/72829ea6-f8fd-4243-b3f8-0eadb3afcbda" />
 - Aceptar, cancelar, rechazar o finalizar turnos.
 - Cargar reseñas, diagnósticos y datos clínicos.
 - Definir su disponibilidad horaria por especialidad.
+  <img width="1849" height="874" alt="image" src="https://github.com/user-attachments/assets/3050f0f1-8755-460c-8859-c3948fa9642b" />
+
 
 ### 🛡️ Administrador
 - Gestionar todos los usuarios (crear, editar, aprobar).
 - Visualizar y cancelar turnos.
 - Acceder a estadísticas completas del sistema.
+<img width="1884" height="883" alt="image" src="https://github.com/user-attachments/assets/70735aac-aac0-42cb-b2b8-e6feee3ec87a" />
 - Descargar datos en PDF/Excel.
 
 
