@@ -3,6 +3,8 @@
 **Clínica Online** es una plataforma web para la gestión integral de turnos médicos, orientada a pacientes, especialistas y administradores. Fue desarrollada como trabajo práctico final, integrando funcionalidades de registro, autenticación, control de accesos, carga de turnos, historia clínica ,generación de reportes y graficos.
 
 ---
+<img width="1908" height="917" alt="image" src="https://github.com/user-attachments/assets/867b59cc-c294-4aac-86d4-714f5269274c" />
+
 
 ## 🚀 Características principales
 
