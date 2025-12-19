@@ -10,6 +10,8 @@
 
 - **Registro y Login de usuarios** con validaciones, verificación de mail y Captcha (Google reCAPTCHA).
 - **Tres roles**: Paciente, Especialista y Administrador, con accesos y vistas personalizadas según el perfil.
+  <img width="1918" height="917" alt="image" src="https://github.com/user-attachments/assets/0902fc54-9ade-4d88-a471-5c76970a8358" />
+
 - **Gestión de usuarios**: creación, habilitación/inactivación y visualización de datos personales y fotos.
 - **Carga y visualización de turnos** con acciones condicionales (aceptar, cancelar, rechazar, finalizar, calificar).
 - **Filtros personalizados** (por especialidad, paciente, especialista), sin combobox, adaptados a cada rol.
@@ -19,6 +21,7 @@
 - **Gráficos e informes estadísticos** sobre turnos, logins, especialidades y más, exportables a PDF o Excel.
 - **Descargas**: historia clínica en PDF y listado de usuarios en Excel.
 - **Animaciones y experiencia de usuario mejorada** en navegación y visualización.
+  
 
 ---
 
