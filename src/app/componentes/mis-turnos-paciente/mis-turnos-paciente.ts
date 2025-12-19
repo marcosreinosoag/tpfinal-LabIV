@@ -34,6 +34,36 @@ export class MisTurnosPaciente implements OnInit {
   historiaVisible: { [turnoId: string]: boolean } = {};
   filtroEspecialistaSeleccionado: string = '';
 
+  // Variables para la encuesta
+  mostrarModalEncuesta: boolean = false;
+  turnoIdEncuesta: string = '';
+  hoverEstrella: number = 0;
+  encuestaData: {
+    calificacionEstrellas: number;
+    recomendacion: string;
+    aspectos: {
+      puntualidad: boolean;
+      profesionalismo: boolean;
+      amabilidad: boolean;
+      instalaciones: boolean;
+      tiempoEspera: boolean;
+    };
+    satisfaccionGeneral: number;
+    comentarios: string;
+  } = {
+    calificacionEstrellas: 0,
+    recomendacion: '',
+    aspectos: {
+      puntualidad: false,
+      profesionalismo: false,
+      amabilidad: false,
+      instalaciones: false,
+      tiempoEspera: false
+    },
+    satisfaccionGeneral: 50,
+    comentarios: ''
+  };
+
 
   constructor(private supabase: Supabase, private router: Router) { }
 
@@ -144,7 +174,7 @@ export class MisTurnosPaciente implements OnInit {
   }
 
   puedeCancelar(turno: any) {
-    return turno.estado !== 'realizado' && turno.estado !== 'cancelado';
+    return turno.estado === 'pendiente';
   }
 
   puedeVerResena(turno: any) {
@@ -153,6 +183,10 @@ export class MisTurnosPaciente implements OnInit {
 
   puedeCalificar(turno: any) {
     return turno.estado === 'realizado' && !turno.calificacionPaciente;
+  }
+
+  puedeCompletarEncuesta(turno: any) {
+    return turno.estado === 'realizado' && !turno.encuestaPaciente;
   }
 
   mostrarCancelar(turnoId: string) {
@@ -220,6 +254,22 @@ export class MisTurnosPaciente implements OnInit {
     return obj ? Object.keys(obj) : [];
   }
 
+  // Función para obtener los datos extra adicionales (excluyendo los 3 campos dinámicos principales)
+  getDatosExtraAdicionales(datosExtra: any): Array<{clave: string, valor: any}> {
+    if (!datosExtra) return [];
+    
+    const camposDinamicos = ['rangoDinamico', 'valorNumerico', 'switchSiNo'];
+    const resultado: Array<{clave: string, valor: any}> = [];
+    
+    for (const clave in datosExtra) {
+      if (!camposDinamicos.includes(clave)) {
+        resultado.push({ clave, valor: datosExtra[clave] });
+      }
+    }
+    
+    return resultado;
+  }
+
   datosTurno(id: string): any {
     return this.mapaTurnos[id] || {};
   }
@@ -256,14 +306,31 @@ export class MisTurnosPaciente implements OnInit {
       y += 8;
     });
 
-    // Si hay datos adicionales, incluirlos en el PDF
+    // Mostrar los 3 campos dinámicos con nombres descriptivos
     if (historia.datos_extra) {
-      doc.text('Otros Datos:', 15, y);
-      y += 8;
-      Object.keys(historia.datos_extra).forEach(clave => {
-        doc.text(`${clave}: ${historia.datos_extra[clave]}`, 20, y);
+      if (historia.datos_extra.rangoDinamico !== undefined) {
+        doc.text(`Bienestar del paciente: ${historia.datos_extra.rangoDinamico}`, 15, y);
         y += 8;
-      });
+      }
+      if (historia.datos_extra.valorNumerico !== undefined) {
+        doc.text(`Cantidad de consultas: ${historia.datos_extra.valorNumerico}`, 15, y);
+        y += 8;
+      }
+      if (historia.datos_extra.switchSiNo !== undefined) {
+        doc.text(`Alergias: ${historia.datos_extra.switchSiNo}`, 15, y);
+        y += 8;
+      }
+
+      // Mostrar otros datos adicionales (excluyendo los 3 campos dinámicos)
+      const otrosDatos = this.getDatosExtraAdicionales(historia.datos_extra);
+      if (otrosDatos.length > 0) {
+        doc.text('Otros Datos:', 15, y);
+        y += 8;
+        otrosDatos.forEach(item => {
+          doc.text(`${item.clave}: ${item.valor}`, 20, y);
+          y += 8;
+        });
+      }
     }
 
     // Guardar el PDF con el nombre "historia-clinica.pdf"
@@ -303,14 +370,31 @@ export class MisTurnosPaciente implements OnInit {
         y += 8;
       });
 
-      // Incluir datos adicionales si existen
+      // Mostrar los 3 campos dinámicos con nombres descriptivos
       if (h.datos_extra) {
-        doc.text('Otros Datos:', 15, y);
-        y += 8;
-        Object.keys(h.datos_extra).forEach(clave => {
-          doc.text(`${clave}: ${h.datos_extra[clave]}`, 20, y);
+        if (h.datos_extra.rangoDinamico !== undefined) {
+          doc.text(`Bienestar del paciente: ${h.datos_extra.rangoDinamico}`, 15, y);
           y += 8;
-        });
+        }
+        if (h.datos_extra.valorNumerico !== undefined) {
+          doc.text(`Cantidad de consultas: ${h.datos_extra.valorNumerico}`, 15, y);
+          y += 8;
+        }
+        if (h.datos_extra.switchSiNo !== undefined) {
+          doc.text(`Alergias: ${h.datos_extra.switchSiNo}`, 15, y);
+          y += 8;
+        }
+
+        // Mostrar otros datos adicionales (excluyendo los 3 campos dinámicos)
+        const otrosDatos = this.getDatosExtraAdicionales(h.datos_extra);
+        if (otrosDatos.length > 0) {
+          doc.text('Otros Datos:', 15, y);
+          y += 8;
+          otrosDatos.forEach(item => {
+            doc.text(`${item.clave}: ${item.valor}`, 20, y);
+            y += 8;
+          });
+        }
       }
 
       // Agregar un pequeño espacio entre cada historia clínica
@@ -386,13 +470,31 @@ export class MisTurnosPaciente implements OnInit {
         y += 8;
       });
 
+      // Mostrar los 3 campos dinámicos con nombres descriptivos
       if (h.datos_extra) {
-        doc.text('Datos adicionales:', 15, y);
-        y += 8;
-        Object.keys(h.datos_extra).forEach(clave => {
-          doc.text(`${clave}: ${h.datos_extra[clave]}`, 20, y);
+        if (h.datos_extra.rangoDinamico !== undefined) {
+          doc.text(`Bienestar del paciente: ${h.datos_extra.rangoDinamico}`, 15, y);
           y += 8;
-        });
+        }
+        if (h.datos_extra.valorNumerico !== undefined) {
+          doc.text(`Cantidad de consultas: ${h.datos_extra.valorNumerico}`, 15, y);
+          y += 8;
+        }
+        if (h.datos_extra.switchSiNo !== undefined) {
+          doc.text(`Alergias: ${h.datos_extra.switchSiNo}`, 15, y);
+          y += 8;
+        }
+
+        // Mostrar otros datos adicionales (excluyendo los 3 campos dinámicos)
+        const otrosDatos = this.getDatosExtraAdicionales(h.datos_extra);
+        if (otrosDatos.length > 0) {
+          doc.text('Datos adicionales:', 15, y);
+          y += 8;
+          otrosDatos.forEach(item => {
+            doc.text(`${item.clave}: ${item.valor}`, 20, y);
+            y += 8;
+          });
+        }
       }
 
       y += 10;
@@ -452,19 +554,118 @@ export class MisTurnosPaciente implements OnInit {
         y += 8;
       });
 
+      // Mostrar los 3 campos dinámicos con nombres descriptivos
       if (h.datos_extra) {
-        doc.text('Datos adicionales:', 15, y);
-        y += 8;
-        Object.keys(h.datos_extra).forEach(clave => {
-          doc.text(`${clave}: ${h.datos_extra[clave]}`, 20, y);
+        if (h.datos_extra.rangoDinamico !== undefined) {
+          doc.text(`Bienestar del paciente: ${h.datos_extra.rangoDinamico}`, 15, y);
           y += 8;
-        });
+        }
+        if (h.datos_extra.valorNumerico !== undefined) {
+          doc.text(`Cantidad de consultas: ${h.datos_extra.valorNumerico}`, 15, y);
+          y += 8;
+        }
+        if (h.datos_extra.switchSiNo !== undefined) {
+          doc.text(`Alergias: ${h.datos_extra.switchSiNo}`, 15, y);
+          y += 8;
+        }
+
+        // Mostrar otros datos adicionales (excluyendo los 3 campos dinámicos)
+        const otrosDatos = this.getDatosExtraAdicionales(h.datos_extra);
+        if (otrosDatos.length > 0) {
+          doc.text('Datos adicionales:', 15, y);
+          y += 8;
+          otrosDatos.forEach(item => {
+            doc.text(`${item.clave}: ${item.valor}`, 20, y);
+            y += 8;
+          });
+        }
       }
 
       y += 10;
     });
 
     doc.save(`historia_especialidad_${especialidad}.pdf`);
+  }
+
+  // Funciones para la encuesta
+  abrirEncuesta(turnoId: string) {
+    this.turnoIdEncuesta = turnoId;
+    // Resetear datos de la encuesta
+    this.encuestaData = {
+      calificacionEstrellas: 0,
+      recomendacion: '',
+      aspectos: {
+        puntualidad: false,
+        profesionalismo: false,
+        amabilidad: false,
+        instalaciones: false,
+        tiempoEspera: false
+      },
+      satisfaccionGeneral: 50,
+      comentarios: ''
+    };
+    this.mostrarModalEncuesta = true;
+  }
+
+  cerrarEncuesta() {
+    this.mostrarModalEncuesta = false;
+    this.turnoIdEncuesta = '';
+    this.hoverEstrella = 0;
+  }
+
+  esEncuestaValida(): boolean {
+    return (
+      this.encuestaData.calificacionEstrellas > 0 &&
+      this.encuestaData.recomendacion !== '' &&
+      (this.encuestaData.aspectos.puntualidad ||
+       this.encuestaData.aspectos.profesionalismo ||
+       this.encuestaData.aspectos.amabilidad ||
+       this.encuestaData.aspectos.instalaciones ||
+       this.encuestaData.aspectos.tiempoEspera)
+    );
+  }
+
+  async enviarEncuesta() {
+    if (!this.esEncuestaValida()) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Encuesta incompleta',
+        text: 'Por favor complete todos los campos obligatorios marcados con *'
+      });
+      return;
+    }
+
+    // Preparar datos de la encuesta para guardar
+    const datosEncuesta = {
+      calificacionEstrellas: this.encuestaData.calificacionEstrellas,
+      recomendacion: this.encuestaData.recomendacion,
+      aspectos: this.encuestaData.aspectos,
+      satisfaccionGeneral: this.encuestaData.satisfaccionGeneral,
+      comentarios: this.encuestaData.comentarios || '',
+      fechaCompletada: new Date().toISOString()
+    };
+
+    // Guardar como JSON string en la columna encuestaPaciente
+    const { error } = await this.supabase.supabase
+      .from('turnos')
+      .update({ encuestaPaciente: JSON.stringify(datosEncuesta) })
+      .eq('id', this.turnoIdEncuesta);
+
+    if (!error) {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Gracias!',
+        text: 'Tu encuesta ha sido registrada exitosamente.'
+      });
+      this.cerrarEncuesta();
+      this.ngOnInit(); // Recargar datos
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo guardar la encuesta. Por favor intenta nuevamente.'
+      });
+    }
   }
 
 }

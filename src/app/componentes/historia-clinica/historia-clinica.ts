@@ -31,6 +31,9 @@ export class HistoriaClinica implements OnInit {
       peso: ['', [Validators.required]],
       temperatura: ['', [Validators.required]],
       presion: ['', [Validators.required]],
+      rangoDinamico: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
+      valorNumerico: ['', [Validators.required]],
+      switchSiNo: [false, [Validators.required]],
       datosExtra: this.fb.array([])
     });
   }
@@ -104,6 +107,14 @@ export class HistoriaClinica implements OnInit {
 
     const valores = this.formHistoria.value;
 
+  // Combinar los 3 campos dinámicos con los datos extra opcionales
+  const datosDinamicos = {
+    rangoDinamico: valores.rangoDinamico,
+    valorNumerico: parseFloat(String(valores.valorNumerico).replace(',', '.')) || 0,
+    switchSiNo: valores.switchSiNo ? 'Si' : 'No',
+    ...this.transformarExtras(valores.datosExtra)
+  };
+
   const historia = {
     turno_id: this.turno.id,
     paciente_id: this.turno.paciente,
@@ -113,7 +124,7 @@ export class HistoriaClinica implements OnInit {
     peso: parseFloat(String(valores.peso).replace(',', '.')),
     temperatura: parseFloat(String(valores.temperatura).replace(',', '.')),
     presion: parseFloat(String(valores.presion).replace(',', '.')),
-    datos_extra: this.transformarExtras(valores.datosExtra)
+    datos_extra: datosDinamicos
   };
 
     const { error } = await this.supabase.supabase

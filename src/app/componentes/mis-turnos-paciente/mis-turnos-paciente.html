@@ -68,11 +68,29 @@
       <p><strong>Peso:</strong> {{ h.peso }} kg</p>
       <p><strong>Presión:</strong> {{ h.presion }}</p>
       <p><strong>Temperatura:</strong> {{ h.temperatura }} °C</p>
-      <ul>
-        <li *ngFor="let clave of getClaves(h.datos_extra)">
-          {{ clave }}: {{ h.datos_extra[clave] }}
-        </li>
-      </ul>
+      
+      <!-- Mostrar los 3 campos dinámicos con nombres descriptivos -->
+      <div *ngIf="h.datos_extra">
+        <p *ngIf="h.datos_extra.rangoDinamico !== undefined">
+          <strong>Bienestar del paciente:</strong> {{ h.datos_extra.rangoDinamico }}
+        </p>
+        <p *ngIf="h.datos_extra.valorNumerico !== undefined">
+          <strong>Cantidad de consultas:</strong> {{ h.datos_extra.valorNumerico }}
+        </p>
+        <p *ngIf="h.datos_extra.switchSiNo !== undefined">
+          <strong>Alergias:</strong> {{ h.datos_extra.switchSiNo }}
+        </p>
+      </div>
+
+      <!-- Mostrar otros datos extra adicionales (excluyendo los 3 campos dinámicos) -->
+      <div *ngIf="getDatosExtraAdicionales(h.datos_extra).length > 0">
+        <p><strong>Otros Datos</strong></p>
+        <ul>
+          <li *ngFor="let item of getDatosExtraAdicionales(h.datos_extra)">
+            {{ item.clave }}: {{ item.valor }}
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
@@ -108,9 +126,24 @@
             <p><strong>Peso:</strong> {{ historia.peso }} kg</p>
             <p><strong>Presión:</strong> {{ historia.presion }}</p>
             <p><strong>Temperatura:</strong> {{ historia.temperatura }} °C</p>
-            <ul>
-              <li *ngFor="let clave of getClaves(historia.datos_extra)">
-                {{ clave }}: {{ historia.datos_extra[clave] }}
+            
+            <!-- Mostrar los 3 campos dinámicos con nombres descriptivos -->
+            <div *ngIf="historia.datos_extra">
+              <p *ngIf="historia.datos_extra.rangoDinamico !== undefined">
+                <strong>Bienestar del paciente:</strong> {{ historia.datos_extra.rangoDinamico }}
+              </p>
+              <p *ngIf="historia.datos_extra.valorNumerico !== undefined">
+                <strong>Cantidad de consultas:</strong> {{ historia.datos_extra.valorNumerico }}
+              </p>
+              <p *ngIf="historia.datos_extra.switchSiNo !== undefined">
+                <strong>Alergias:</strong> {{ historia.datos_extra.switchSiNo }}
+              </p>
+            </div>
+
+            <!-- Mostrar otros datos extra adicionales (excluyendo los 3 campos dinámicos) -->
+            <ul *ngIf="getDatosExtraAdicionales(historia.datos_extra).length > 0">
+              <li *ngFor="let item of getDatosExtraAdicionales(historia.datos_extra)">
+                {{ item.clave }}: {{ item.valor }}
               </li>
             </ul>
           </ng-container>
@@ -136,7 +169,152 @@
             <button (click)="calificarAtencion(turno.id)">Enviar</button>
           </div>
         </ng-container>
+
+        <!-- Botón para completar encuesta -->
+        <ng-container *ngIf="puedeCompletarEncuesta(turno)">
+          <button class="btn-encuesta" (click)="abrirEncuesta(turno.id)">
+            📋 Completar Encuesta
+          </button>
+        </ng-container>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal de Encuesta -->
+<div class="modal-encuesta-overlay" *ngIf="mostrarModalEncuesta" (click)="cerrarEncuesta()"></div>
+<div class="modal-encuesta" *ngIf="mostrarModalEncuesta" (click)="$event.stopPropagation()">
+  <div class="modal-encuesta-content">
+    <div class="modal-encuesta-header">
+      <h2>📋 Encuesta de Satisfacción</h2>
+      <button class="btn-cerrar" (click)="cerrarEncuesta()">✕</button>
+    </div>
+    
+    <form class="form-encuesta" (ngSubmit)="enviarEncuesta()">
+      <!-- 1. Estrellas para calificar -->
+      <div class="campo-encuesta">
+        <label>¿Cómo calificaría la atención recibida? *</label>
+        <div class="rating-stars">
+          <span 
+            *ngFor="let star of [1,2,3,4,5]; let i = index"
+            class="star"
+            [class.active]="(hoverEstrella > 0 ? hoverEstrella : encuestaData.calificacionEstrellas) >= (i + 1)"
+            (click)="encuestaData.calificacionEstrellas = i + 1"
+            (mouseenter)="hoverEstrella = i + 1"
+            (mouseleave)="hoverEstrella = 0">
+            ⭐
+          </span>
+        </div>
+        <span class="rating-value">{{ encuestaData.calificacionEstrellas }}/5</span>
+      </div>
+
+      <!-- 2. Radio button -->
+      <div class="campo-encuesta">
+        <label>¿Recomendaría nuestro servicio? *</label>
+        <div class="radio-group">
+          <label>
+            <input 
+              type="radio" 
+              name="recomendacion" 
+              value="si"
+              [(ngModel)]="encuestaData.recomendacion"
+              [ngModelOptions]="{standalone: true}">
+            Sí, definitivamente
+          </label>
+          <label>
+            <input 
+              type="radio" 
+              name="recomendacion" 
+              value="talvez"
+              [(ngModel)]="encuestaData.recomendacion"
+              [ngModelOptions]="{standalone: true}">
+            Tal vez
+          </label>
+          <label>
+            <input 
+              type="radio" 
+              name="recomendacion" 
+              value="no"
+              [(ngModel)]="encuestaData.recomendacion"
+              [ngModelOptions]="{standalone: true}">
+            No
+          </label>
+        </div>
+      </div>
+
+      <!-- 3. Check box (múltiples opciones) -->
+      <div class="campo-encuesta">
+        <label>¿Qué aspectos destacaría de la atención? (Puede seleccionar varios) *</label>
+        <div class="checkbox-group">
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="encuestaData.aspectos.puntualidad"
+              [ngModelOptions]="{standalone: true}">
+            Puntualidad
+          </label>
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="encuestaData.aspectos.profesionalismo"
+              [ngModelOptions]="{standalone: true}">
+            Profesionalismo
+          </label>
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="encuestaData.aspectos.amabilidad"
+              [ngModelOptions]="{standalone: true}">
+            Amabilidad
+          </label>
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="encuestaData.aspectos.instalaciones"
+              [ngModelOptions]="{standalone: true}">
+            Instalaciones
+          </label>
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="encuestaData.aspectos.tiempoEspera"
+              [ngModelOptions]="{standalone: true}">
+            Tiempo de espera
+          </label>
+        </div>
+      </div>
+
+      <!-- 4. Control de rango -->
+      <div class="campo-encuesta">
+        <label>Nivel de satisfacción general (0-100) *</label>
+        <div class="range-container-encuesta">
+          <input 
+            type="range" 
+            min="0" 
+            max="100" 
+            step="1"
+            [(ngModel)]="encuestaData.satisfaccionGeneral"
+            [ngModelOptions]="{standalone: true}"
+            class="range-input-encuesta">
+          <span class="range-value-encuesta">{{ encuestaData.satisfaccionGeneral }}%</span>
+        </div>
+      </div>
+
+      <!-- 5. SOLO UN cuadro de texto -->
+      <div class="campo-encuesta">
+        <label>Comentarios adicionales (opcional)</label>
+        <textarea 
+          [(ngModel)]="encuestaData.comentarios"
+          [ngModelOptions]="{standalone: true}"
+          placeholder="Escriba aquí sus comentarios, sugerencias o recomendaciones..."
+          rows="4"
+          class="textarea-encuesta"></textarea>
+      </div>
+
+      <div class="modal-encuesta-footer">
+        <button type="button" class="btn-cancelar" (click)="cerrarEncuesta()">Cancelar</button>
+        <button type="submit" class="btn-enviar" [disabled]="!esEncuestaValida()">Enviar Encuesta</button>
+      </div>
+    </form>
   </div>
 </div>

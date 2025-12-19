@@ -306,6 +306,22 @@ export class Administrador implements OnInit {
   getClaves(obj: any): string[] {
     return obj ? Object.keys(obj) : [];
   }
+
+  // Función para obtener los datos extra adicionales (excluyendo los 3 campos dinámicos principales)
+  getDatosExtraAdicionales(datosExtra: any): Array<{clave: string, valor: any}> {
+    if (!datosExtra) return [];
+    
+    const camposDinamicos = ['rangoDinamico', 'valorNumerico', 'switchSiNo'];
+    const resultado: Array<{clave: string, valor: any}> = [];
+    
+    for (const clave in datosExtra) {
+      if (!camposDinamicos.includes(clave)) {
+        resultado.push({ clave, valor: datosExtra[clave] });
+      }
+    }
+    
+    return resultado;
+  }
   async verHistoriaClinica(pacienteId: string) {
     // Traer datos del paciente
     const { data: paciente } = await this.supabaseService.supabase
@@ -366,14 +382,34 @@ export class Administrador implements OnInit {
         doc.text(dato, 15, y);
         y += 8;
       });
+      
+      // Mostrar los 3 campos dinámicos con nombres descriptivos
       if (h.datos_extra) {
-        doc.text('Otros Datos:', 15, y);
-        y += 8;
-        Object.keys(h.datos_extra).forEach(clave => {
-          doc.text(`${clave}: ${h.datos_extra[clave]}`, 20, y);
+        if (h.datos_extra.rangoDinamico !== undefined) {
+          doc.text(`Bienestar del paciente: ${h.datos_extra.rangoDinamico}`, 15, y);
           y += 8;
-        });
+        }
+        if (h.datos_extra.valorNumerico !== undefined) {
+          doc.text(`Cantidad de consultas: ${h.datos_extra.valorNumerico}`, 15, y);
+          y += 8;
+        }
+        if (h.datos_extra.switchSiNo !== undefined) {
+          doc.text(`Alergias: ${h.datos_extra.switchSiNo}`, 15, y);
+          y += 8;
+        }
+
+        // Mostrar otros datos adicionales (excluyendo los 3 campos dinámicos)
+        const otrosDatos = this.getDatosExtraAdicionales(h.datos_extra);
+        if (otrosDatos.length > 0) {
+          doc.text('Otros Datos:', 15, y);
+          y += 8;
+          otrosDatos.forEach(item => {
+            doc.text(`${item.clave}: ${item.valor}`, 20, y);
+            y += 8;
+          });
+        }
       }
+      
       y += 10;
     });
 

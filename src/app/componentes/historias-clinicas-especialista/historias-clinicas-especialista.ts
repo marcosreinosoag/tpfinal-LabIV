@@ -79,6 +79,22 @@ export class HistoriasClinicasEspecialista implements OnInit {
     return obj ? Object.keys(obj) : [];
   }
 
+  // Función para obtener los datos extra adicionales (excluyendo los 3 campos dinámicos principales)
+  getDatosExtraAdicionales(datosExtra: any): Array<{clave: string, valor: any}> {
+    if (!datosExtra) return [];
+    
+    const camposDinamicos = ['rangoDinamico', 'valorNumerico', 'switchSiNo'];
+    const resultado: Array<{clave: string, valor: any}> = [];
+    
+    for (const clave in datosExtra) {
+      if (!camposDinamicos.includes(clave)) {
+        resultado.push({ clave, valor: datosExtra[clave] });
+      }
+    }
+    
+    return resultado;
+  }
+
   nombrePaciente(id: string): string {
     return this.mapaPacientes[id] || 'Paciente';
   }

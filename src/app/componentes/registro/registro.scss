@@ -49,6 +49,40 @@
   align-items: center;
 }
 
+.navbar-clinica .navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-clinica .navbar-links li .language-selector {
+  .language-select {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 2px solid #3b82f6;
+    background-color: #fff;
+    color: #0f172a;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+
+    &:hover {
+      background-color: #3b82f6;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+  }
+}
+
 .navbar-clinica .logo img {
   height: 60px;
   margin-right: 1rem;

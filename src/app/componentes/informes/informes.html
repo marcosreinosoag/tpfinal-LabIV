@@ -37,6 +37,26 @@
   [class.activa]="seccionActiva === 'finalizados'" 
   (click)="cambiarSeccion('finalizados')">Turnos Finalizados</button>
 
+  <button 
+    [class.activa]="seccionActiva === 'visitas'" 
+    (click)="cambiarSeccion('visitas')">Cantidad de Visitas</button>
+
+  <button 
+    [class.activa]="seccionActiva === 'pacientes-esp'" 
+    (click)="cambiarSeccion('pacientes-esp')">Pacientes por Especialidad</button>
+
+  <button 
+    [class.activa]="seccionActiva === 'medicos-esp'" 
+    (click)="cambiarSeccion('medicos-esp')">Médicos por Especialidad</button>
+
+  <button 
+    [class.activa]="seccionActiva === 'encuestas'" 
+    (click)="cambiarSeccion('encuestas')">Encuestas de Satisfacción</button>
+
+  <button 
+    [class.activa]="seccionActiva === 'turnos-paciente'" 
+    (click)="cambiarSeccion('turnos-paciente')">Turnos por Paciente</button>
+
 </div>
 
 <!-- LOGS -->
@@ -115,4 +135,129 @@
   <button (click)="exportarGraficoFinalizadosPorMedicoAPdf()">EXPORTAR A PDF</button>
 </div>
 
+</div>
+
+<!-- CANTIDAD DE VISITAS -->
+<div *ngIf="seccionActiva === 'visitas'" class="seccion">
+  <div class="visitas-container">
+    <div class="visitas-card">
+      <h3>📊 Resumen de Visitas a la Clínica</h3>
+      <div class="visitas-numero">
+        <span class="numero-grande">{{ totalVisitas }}</span>
+        <span class="label">Total de Visitas</span>
+      </div>
+      <p class="descripcion">Esta es la cantidad total de ingresos registrados en el sistema.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PACIENTES POR ESPECIALIDAD -->
+<div *ngIf="seccionActiva === 'pacientes-esp'" class="seccion">
+  <div class="grafico-contenedor" *ngIf="pacientesPorEspecialidad.length > 0">
+    <canvas id="graficoPacientesPorEspecialidad"></canvas>
+  </div>
+  <div class="mensaje-vacio" *ngIf="pacientesPorEspecialidad.length === 0">
+    No hay datos disponibles.
+  </div>
+  <div class="exportar" *ngIf="pacientesPorEspecialidad.length > 0">
+    <button (click)="descargarImagenPacientesPorEspecialidad()">📥 DESCARGAR IMAGEN DEL GRÁFICO</button>
+  </div>
+</div>
+
+<!-- MÉDICOS POR ESPECIALIDAD -->
+<div *ngIf="seccionActiva === 'medicos-esp'" class="seccion">
+  <div class="grafico-contenedor" *ngIf="medicosPorEspecialidad.length > 0">
+    <canvas id="graficoMedicosPorEspecialidad"></canvas>
+  </div>
+  <div class="mensaje-vacio" *ngIf="medicosPorEspecialidad.length === 0">
+    No hay datos disponibles.
+  </div>
+  <div class="exportar" *ngIf="medicosPorEspecialidad.length > 0">
+    <button (click)="descargarImagenMedicosPorEspecialidad()">📥 DESCARGAR IMAGEN DEL GRÁFICO</button>
+  </div>
+</div>
+
+<!-- ENCUESTAS DE SATISFACCIÓN -->
+<div *ngIf="seccionActiva === 'encuestas'" class="seccion">
+  <div class="encuestas-header">
+    <h3>📋 Informe de Encuestas de Satisfacción</h3>
+    <button class="btn-exportar-excel" (click)="exportarEncuestasAExcel()">📊 EXPORTAR A EXCEL</button>
+  </div>
+  
+  <div class="encuestas-container" *ngIf="encuestas.length > 0">
+    <div class="encuesta-card" *ngFor="let encuesta of encuestas">
+      <div class="encuesta-header">
+        <p><strong>Fecha:</strong> {{ encuesta.fecha | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Especialidad:</strong> {{ encuesta.especialidad }}</p>
+        <p><strong>Especialista:</strong> {{ getNombreEspecialista(encuesta.especialista) }}</p>
+      </div>
+      <div class="encuesta-body" *ngIf="encuesta.encuesta">
+        <div class="encuesta-item">
+          <strong>⭐ Calificación:</strong> {{ encuesta.encuesta.calificacionEstrellas }}/5 estrellas
+        </div>
+        <div class="encuesta-item">
+          <strong>👍 Recomendación:</strong> {{ encuesta.encuesta.recomendacion }}
+        </div>
+        <div class="encuesta-item">
+          <strong>📊 Satisfacción General:</strong> {{ encuesta.encuesta.satisfaccionGeneral }}%
+        </div>
+        <div class="encuesta-item" *ngIf="encuesta.encuesta.aspectos">
+          <strong>✨ Aspectos Destacados:</strong>
+          <ul>
+            <li *ngIf="encuesta.encuesta.aspectos.puntualidad">Puntualidad</li>
+            <li *ngIf="encuesta.encuesta.aspectos.profesionalismo">Profesionalismo</li>
+            <li *ngIf="encuesta.encuesta.aspectos.amabilidad">Amabilidad</li>
+            <li *ngIf="encuesta.encuesta.aspectos.instalaciones">Instalaciones</li>
+            <li *ngIf="encuesta.encuesta.aspectos.tiempoEspera">Tiempo de Espera</li>
+          </ul>
+        </div>
+        <div class="encuesta-item" *ngIf="encuesta.encuesta.comentarios">
+          <strong>💬 Comentarios:</strong> {{ encuesta.encuesta.comentarios }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mensaje-vacio" *ngIf="encuestas.length === 0">
+    No hay encuestas registradas.
+  </div>
+</div>
+
+<!-- TURNOS POR PACIENTE -->
+<div *ngIf="seccionActiva === 'turnos-paciente'" class="seccion">
+  <div class="selector-paciente">
+    <label>
+      <strong>Seleccionar Paciente:</strong>
+      <select [(ngModel)]="pacienteSeleccionado" (change)="cargarTurnosDelPaciente()">
+        <option value="">-- Seleccione un paciente --</option>
+        <option *ngFor="let paciente of pacientes" [value]="paciente.id">
+          {{ paciente.nombre }} {{ paciente.apellido }} ({{ paciente.mail }})
+        </option>
+      </select>
+    </label>
+  </div>
+
+  <div *ngIf="pacienteSeleccionado && turnosDelPaciente.length > 0" class="turnos-paciente-container">
+    <div class="turnos-paciente-header">
+      <h3>📋 Turnos de {{ getNombrePaciente(pacienteSeleccionado) }}</h3>
+      <button class="btn-exportar-excel" (click)="exportarTurnosPacienteAExcel()">📊 EXPORTAR A EXCEL</button>
+    </div>
+    
+    <div class="turnos-paciente-grid">
+      <div class="turno-paciente-card" *ngFor="let turno of turnosDelPaciente" [ngClass]="'estado-' + turno.estado">
+        <p><strong>Fecha:</strong> {{ turno.fecha | date:'dd/MM/yyyy' }}</p>
+        <p><strong>Hora:</strong> {{ turno.hora }}</p>
+        <p><strong>Especialidad:</strong> {{ turno.especialidad }}</p>
+        <p><strong>Especialista:</strong> {{ getNombreEspecialista(turno.especialista) }}</p>
+        <p><strong>Estado:</strong> <span class="estado-badge">{{ turno.estado | uppercase }}</span></p>
+        <p *ngIf="turno.motivo_cancelacion"><strong>Motivo Cancelación:</strong> {{ turno.motivo_cancelacion }}</p>
+        <p *ngIf="turno.motivo_rechazo"><strong>Motivo Rechazo:</strong> {{ turno.motivo_rechazo }}</p>
+        <p *ngIf="turno.comentarioEspecialista"><strong>Comentario Especialista:</strong> {{ turno.comentarioEspecialista }}</p>
+        <p *ngIf="turno.calificacionPaciente"><strong>Calificación:</strong> {{ turno.calificacionPaciente }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mensaje-vacio" *ngIf="pacienteSeleccionado && turnosDelPaciente.length === 0">
+    Este paciente no tiene turnos registrados.
+  </div>
 </div>

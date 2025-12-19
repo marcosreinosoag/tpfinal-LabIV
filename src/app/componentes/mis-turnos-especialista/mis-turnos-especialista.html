@@ -45,12 +45,12 @@
           <option *ngFor="let dia of diasSemana" [value]="dia">{{ dia }}</option>
         </select>
 
-        <select [(ngModel)]="h.horaInicio" class="campo" [disabled]="!h.especialidad">
+        <select [(ngModel)]="h.horaInicio" class="campo" [disabled]="!h.especialidad || !h.dia">
           <option value="" disabled selected>Desde</option>
           <option *ngFor="let hora of getHorasParaDia(h.dia)" [value]="hora">{{ hora }}</option>
         </select>
 
-        <select [(ngModel)]="h.horaFin" class="campo" [disabled]="!h.especialidad">
+        <select [(ngModel)]="h.horaFin" class="campo" [disabled]="!h.especialidad || !h.dia">
           <option value="" disabled selected>Hasta</option>
           <option *ngFor="let hora of getHorasParaDia(h.dia)" [value]="hora">{{ hora }}</option>
         </select>
@@ -105,9 +105,23 @@
   <p><strong>Presión:</strong> {{ turno.historia.presion }}</p>
   <p><strong>Temperatura:</strong> {{ turno.historia.temperatura }} °C</p>
 
-  <ul>
-    <li *ngFor="let clave of getClaves(turno.historia.datos_extra)">
-      {{ clave }}: {{ turno.historia.datos_extra[clave] }}
+  <!-- Mostrar los 3 campos dinámicos con nombres descriptivos -->
+  <div *ngIf="turno.historia.datos_extra">
+    <p *ngIf="turno.historia.datos_extra.rangoDinamico !== undefined">
+      <strong>Bienestar del paciente:</strong> {{ turno.historia.datos_extra.rangoDinamico }}
+    </p>
+    <p *ngIf="turno.historia.datos_extra.valorNumerico !== undefined">
+      <strong>Cantidad de consultas:</strong> {{ turno.historia.datos_extra.valorNumerico }}
+    </p>
+    <p *ngIf="turno.historia.datos_extra.switchSiNo !== undefined">
+      <strong>Alergias:</strong> {{ turno.historia.datos_extra.switchSiNo }}
+    </p>
+  </div>
+
+  <!-- Mostrar otros datos extra adicionales (excluyendo los 3 campos dinámicos) -->
+  <ul *ngIf="getDatosExtraAdicionales(turno.historia.datos_extra).length > 0">
+    <li *ngFor="let item of getDatosExtraAdicionales(turno.historia.datos_extra)">
+      {{ item.clave }}: {{ item.valor }}
     </li>
   </ul>
 </div>

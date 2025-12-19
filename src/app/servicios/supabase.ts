@@ -6,7 +6,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 })
 export class Supabase {
   public supabase: SupabaseClient; 
-  constructor() {this.supabase = createClient('https://ltlzjkqhulpaydaoldma.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0bHpqa3FodWxwYXlkYW9sZG1hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTc5ODMsImV4cCI6MjA2NDk5Mzk4M30.1XAbtNEDQRCuhdfvMnwMif0Vn_avDw0b9ZKpNuZE1xM') }
+  constructor() {this.supabase = createClient('https://sjmmmfxkuimzkkabpkwn.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqbW1tZnhrdWltemtrYWJwa3duIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MDc0NzMsImV4cCI6MjA4MTM4MzQ3M30.PmbL_GwlZfeyOe3PxX1lRaVpFeE9RQ_mKpDpZKVypuU') }
    // Función para subir la imagen al almacenamiento de Supabase
   async uploadImage(file: File, path: string): Promise<string | null> {
     try {
@@ -231,7 +231,188 @@ async getTurnosFinalizadosPorMedico(desde: string, hasta: string) {
   }));
 }
 
+// Obtener cantidad de pacientes por especialidad
+async getPacientesPorEspecialidad() {
+  const { data: turnos, error } = await this.supabase
+    .from('turnos')
+    .select('especialidad, paciente');
 
+  if (error) {
+    console.error('Error al obtener pacientes por especialidad:', error.message);
+    return [];
+  }
+
+  console.log('Total turnos obtenidos para pacientes por especialidad:', turnos?.length || 0);
+
+  // Agrupar por especialidad y contar pacientes únicos
+  const pacientesPorEspecialidad: { [especialidad: string]: Set<string> } = {};
+  
+  turnos?.forEach(t => {
+    const esp = t.especialidad || 'Sin especialidad';
+    const pacienteId = t.paciente;
+    
+    if (!pacientesPorEspecialidad[esp]) {
+      pacientesPorEspecialidad[esp] = new Set();
+    }
+    
+    if (pacienteId) {
+      pacientesPorEspecialidad[esp].add(pacienteId);
+    }
+  });
+
+  const resultado = Object.entries(pacientesPorEspecialidad).map(([especialidad, pacientesSet]) => ({
+    especialidad,
+    cantidad: pacientesSet.size
+  }));
+
+  console.log('Pacientes por especialidad calculados:', resultado);
+  return resultado;
+}
+
+// Obtener cantidad de médicos por especialidad
+async getMedicosPorEspecialidad() {
+  // Obtener todos los usuarios primero
+  const { data: allUsers, error: allError } = await this.supabase
+    .from('usuarios')
+    .select('id, mail, especialidades, rol');
+
+  if (allError) {
+    console.error('Error al obtener usuarios:', allError.message);
+    return [];
+  }
+
+  console.log('Total usuarios obtenidos:', allUsers?.length || 0);
+
+  // Filtrar especialistas (case-insensitive)
+  const usuarios = (allUsers || []).filter(u => 
+    u.rol && u.rol.toLowerCase() === 'especialista'
+  );
+
+  console.log('Total especialistas filtrados:', usuarios.length);
+
+  // Agrupar médicos por especialidad
+  const medicosPorEspecialidad: { [especialidad: string]: Set<string> } = {};
+  
+  usuarios.forEach(usuario => {
+    let especialidades: string[] = [];
+    
+    if (typeof usuario.especialidades === 'string') {
+      try {
+        especialidades = JSON.parse(usuario.especialidades);
+      } catch {
+        especialidades = usuario.especialidades.split(',').map((e: string) => e.trim());
+      }
+    } else if (Array.isArray(usuario.especialidades)) {
+      especialidades = usuario.especialidades;
+    }
+    
+    console.log('Especialista:', usuario.mail, 'Especialidades:', especialidades);
+    
+    especialidades.forEach(esp => {
+      if (esp && esp.trim() !== '') {
+        if (!medicosPorEspecialidad[esp]) {
+          medicosPorEspecialidad[esp] = new Set();
+        }
+        medicosPorEspecialidad[esp].add(usuario.mail);
+      }
+    });
+  });
+
+  const resultado = Object.entries(medicosPorEspecialidad).map(([especialidad, medicosSet]) => ({
+    especialidad,
+    cantidad: medicosSet.size
+  }));
+
+  console.log('Médicos por especialidad calculados:', resultado);
+  return resultado;
+}
+
+// Obtener todas las encuestas de pacientes
+async getEncuestasPacientes() {
+  const { data, error } = await this.supabase
+    .from('turnos')
+    .select('id, encuestaPaciente, especialidad, fecha, paciente, especialista');
+
+  if (error) {
+    console.error('Error al obtener encuestas:', error.message);
+    return [];
+  }
+
+  // Filtrar y parsear las encuestas
+  const turnosConEncuesta = (data || []).filter(t => {
+    return t.encuestaPaciente && 
+           t.encuestaPaciente !== null && 
+           t.encuestaPaciente !== 'null' &&
+           String(t.encuestaPaciente).trim() !== '';
+  });
+
+  const encuestas = turnosConEncuesta.map(t => {
+    try {
+      let encuestaParsed;
+      if (typeof t.encuestaPaciente === 'string') {
+        encuestaParsed = JSON.parse(t.encuestaPaciente);
+      } else {
+        encuestaParsed = t.encuestaPaciente;
+      }
+      
+      return {
+        ...t,
+        encuesta: encuestaParsed
+      };
+    } catch (parseError) {
+      console.error('Error al parsear encuesta:', parseError);
+      return null;
+    }
+  }).filter(t => t !== null && t.encuesta !== null);
+
+  return encuestas;
+}
+
+// Obtener todos los turnos de un paciente específico
+async getTurnosPorPaciente(pacienteId: string) {
+  const { data, error } = await this.supabase
+    .from('turnos')
+    .select('*')
+    .eq('paciente', pacienteId)
+    .order('fecha', { ascending: false });
+
+  if (error) {
+    console.error('Error al obtener turnos del paciente:', error.message);
+    return [];
+  }
+
+  return data || [];
+}
+
+// Obtener todos los pacientes
+async getTodosLosPacientes() {
+  // Obtener todos los usuarios primero para ver qué roles hay
+  const { data: allUsers, error: allError } = await this.supabase
+    .from('usuarios')
+    .select('id, nombre, apellido, mail, rol');
+
+  if (allError) {
+    console.error('Error al obtener usuarios:', allError.message);
+    return [];
+  }
+
+  console.log('Todos los usuarios obtenidos:', allUsers?.length || 0);
+  console.log('Roles únicos encontrados:', [...new Set(allUsers?.map(u => u.rol) || [])]);
+
+  // Filtrar pacientes (case-insensitive)
+  const pacientes = (allUsers || []).filter(u => 
+    u.rol && u.rol.toLowerCase() === 'paciente'
+  );
+
+  console.log('Pacientes filtrados:', pacientes.length, pacientes);
+  
+  return pacientes.map(p => ({
+    id: p.id,
+    nombre: p.nombre,
+    apellido: p.apellido,
+    mail: p.mail
+  }));
+}
 
 }
 

@@ -3,10 +3,11 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Supabase } from '../../servicios/supabase';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AutoFocus } from '../../directivas/auto-focus';
 import { MostrarPassword } from '../../directivas/mostrar-password';
 import { ToggleCaptchaButtonDirective } from '../../directivas/captcha-propio';
+import { TranslationService, Language } from '../../servicios/translation.service';
 
 declare global {
   interface Window {
@@ -18,7 +19,7 @@ declare global {
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, AutoFocus, MostrarPassword, ToggleCaptchaButtonDirective],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule, AutoFocus, MostrarPassword, ToggleCaptchaButtonDirective],
   templateUrl: './registro.html',
   styleUrls: ['./registro.scss']
 })
@@ -33,9 +34,31 @@ export class Registro implements OnInit, AfterViewChecked {
   renderizado = false;
   captchaValido = false;
   captchaHabilitado = true;
-  enviando = false;  // <-- NUEVO FLAG PARA EVITAR MÚLTIPLES ENVIOS
+  enviando = false;
+  currentLanguage: Language = 'es';
+  languages: { code: Language; name: string }[] = [
+    { code: 'es', name: 'Español' },
+    { code: 'en', name: 'English' },
+    { code: 'pt', name: 'Português' }
+  ];
 
-  constructor(private fb: FormBuilder, private supabaseService: Supabase) { }
+  constructor(
+    private fb: FormBuilder, 
+    private supabaseService: Supabase,
+    public translationService: TranslationService
+  ) {
+    // Establecer idioma a español sin guardar en localStorage
+    this.translationService.setLanguage('es', false);
+    this.currentLanguage = 'es';
+  }
+
+  changeLanguage(language: Language) {
+    this.translationService.setLanguage(language, false);
+  }
+
+  translate(key: string): string {
+    return this.translationService.translate(key);
+  }
 
   ngOnInit(): void {
     this.formPaciente = this.fb.group({
@@ -99,12 +122,12 @@ export class Registro implements OnInit, AfterViewChecked {
 
   mensajeError(controlName: string): string {
     const control = this.getForm().get(controlName);
-    if (control?.hasError('required')) return 'Campo obligatorio';
-    if (control?.hasError('pattern')) return 'Formato inválido';
-    if (control?.hasError('email')) return 'Correo inválido';
-    if (control?.hasError('minlength')) return 'Contraseña muy corta';
-    if (controlName === 'edad' && control?.hasError('min')) return 'Edad mínima inválida';
-    if (controlName === 'edad' && control?.hasError('max')) return 'Edad máxima inválida';
+    if (control?.hasError('required')) return this.translate('register.error.required');
+    if (control?.hasError('pattern')) return this.translate('register.error.invalidFormat');
+    if (control?.hasError('email')) return this.translate('register.error.invalidEmail');
+    if (control?.hasError('minlength')) return this.translate('register.error.shortPassword');
+    if (controlName === 'edad' && control?.hasError('min')) return this.translate('register.error.minAge');
+    if (controlName === 'edad' && control?.hasError('max')) return this.translate('register.error.maxAge');
     return '';
   }
 
@@ -137,18 +160,18 @@ export class Registro implements OnInit, AfterViewChecked {
   }
 
   async onSubmit() {
-    if (this.enviando) return; // Evitar múltiples envíos
+    if (this.enviando) return;
     this.enviando = true;
 
     const form = this.getForm();
     if (form.invalid) {
-      Swal.fire('Error', 'Formulario incompleto o inválido', 'error');
+      Swal.fire('Error', this.translate('register.error.incomplete'), 'error');
       this.enviando = false;
       return;
     }
 
     if (this.captchaHabilitado && !this.captchaValido) {
-      Swal.fire('Error', 'Por favor, resolvé el captcha para continuar.', 'error');
+      Swal.fire('Error', this.translate('register.error.captcha'), 'error');
       this.enviando = false;
       return;
     }
@@ -175,33 +198,34 @@ export class Registro implements OnInit, AfterViewChecked {
     }
 
     try {
-      // Validar si el mail ya está registrado en la tabla usuarios
       const { data: usuariosExistentes, error: errorMail } = await this.supabaseService.supabase
         .from('usuarios')
         .select('id')
         .eq('mail', formData.mail);
 
       if (errorMail) {
-        Swal.fire('Error', 'No se pudo verificar el correo. Intenta nuevamente.', 'error');
+        Swal.fire('Error', this.translate('register.error.emailCheck'), 'error');
         this.enviando = false;
         return;
       }
 
       if (usuariosExistentes && usuariosExistentes.length > 0) {
-        Swal.fire('Correo ya registrado', 'El correo electrónico ingresado ya está en uso.', 'warning');
+        Swal.fire(
+          this.translate('register.error.emailExistsTitle'), 
+          this.translate('register.error.emailExists'), 
+          'warning'
+        );
         this.enviando = false;
         return;
       }
 
-      // Intentar registrar en Supabase Auth
       const user = await this.supabaseService.signUp(formData.mail, password);
       if (!user) {
-        Swal.fire('Error', 'El correo ya está en uso en el sistema de autenticación.', 'error');
+        Swal.fire('Error', this.translate('register.error.authEmailExists'), 'error');
         this.enviando = false;
         return;
       }
 
-      // Insertar en tabla usuarios
       formData.id = user.id;
       await this.supabaseService.saveUser(formData);
 
@@ -212,12 +236,16 @@ export class Registro implements OnInit, AfterViewChecked {
       this.renderizado = false;
       this.captchaValido = false;
 
-      Swal.fire('Éxito', 'Usuario registrado correctamente', 'success');
+      Swal.fire(
+        this.translate('register.successTitle'), 
+        this.translate('register.success'), 
+        'success'
+      );
     } catch (error: any) {
       if (error?.message?.includes('email')) {
-        Swal.fire('Error', 'Este correo ya fue registrado. Probá con otro.', 'error');
+        Swal.fire('Error', this.translate('register.error.emailRegistered'), 'error');
       } else {
-        Swal.fire('Error', 'Hubo un problema al registrar el usuario', 'error');
+        Swal.fire('Error', this.translate('register.error.general'), 'error');
       }
     } finally {
       this.enviando = false;

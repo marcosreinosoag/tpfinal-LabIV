@@ -2,13 +2,20 @@
   <div class="logo">
     <img src="assets/images/icono.ico" alt="Clínica" />
     <div class="titulo-logo">
-      <h2>Clínica OnLine</h2>
-      <span>Especialistas en Salud</span>
+      <h2>{{ translate('welcome.clinicName') }}</h2>
+      <span>{{ translate('welcome.specialists') }}</span>
     </div>
   </div>
   <ul class="navbar-links">
+    <li>
+      <div class="language-selector">
+        <select [(ngModel)]="currentLanguage" (change)="changeLanguage(currentLanguage)" class="language-select">
+          <option *ngFor="let lang of languages" [value]="lang.code">{{ lang.name }}</option>
+        </select>
+      </div>
+    </li>
     <li> <button class="registro-btn" (click)="goTo('registro')">
-        Registrarse
+        {{ translate('welcome.register') }}
       </button></li>
   </ul>
 </nav>
@@ -17,17 +24,22 @@
 <div class="hero-background">
   <div class="login-wrapper">
     <div class="login-card">
-      <h2>Iniciar sesión</h2>
+      <h2>{{ translate('login.title') }}</h2>
 
       <!-- Formulario -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        <label for="email">Email</label>
-        <input id="email" type="email" formControlName="email" placeholder="Ingresá tu correo" />
+        <label for="email">{{ translate('login.email') }}</label>
+        <input id="email" type="email" formControlName="email" [placeholder]="translate('login.emailPlaceholder')" />
 
-        <label for="password">Contraseña</label>
-        <input id="password" type="password" formControlName="password" placeholder="Ingresá tu contraseña" />
+        <label for="password">{{ translate('login.password') }}</label>
+        <input id="password" type="password" formControlName="password" [placeholder]="translate('login.passwordPlaceholder')" />
 
-        <button type="submit" [disabled]="loginForm.invalid">Iniciar sesión</button>
+        <button type="submit" [disabled]="loginForm.invalid || iniciandoSesion">
+          <ng-container *ngIf="!iniciandoSesion">{{ translate('login.submit') }}</ng-container>
+          <ng-container *ngIf="iniciandoSesion">
+            <span class="spinner"></span> {{ translate('login.loggingIn') || 'Iniciando sesión...' }}
+          </ng-container>
+        </button>
 
         <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
       </form>

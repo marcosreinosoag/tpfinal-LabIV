@@ -44,40 +44,8 @@ turnos: any[] = [];
 
   this.esAdmin = true;
 
-  // Traer turnos
-  const { data: turnos, error } = await this.supabase.supabase
-    .from('turnos')
-    .select('*');
-
-  if (error || !turnos) return;
-
-  this.turnos = turnos;
-  this.especialidades = [...new Set(turnos.map(t => t.especialidad))];
-
-  // Traer pacientes por UUID
-  const pacienteIds = [...new Set(turnos.map(t => t.paciente))].filter(Boolean);
-  const { data: pacientes } = await this.supabase.supabase
-    .from('usuarios')
-    .select('id, nombre, apellido')
-    .in('id', pacienteIds);
-
-  // Traer especialistas por mail
-  const especialistaMails = [...new Set(turnos.map(t => t.especialista))].filter(Boolean);
-  const { data: especialistas } = await this.supabase.supabase
-    .from('usuarios')
-    .select('mail, nombre, apellido')
-    .in('mail', especialistaMails);
-
-  // Armar mapas
-  const mapaPacientes = new Map(pacientes?.map(p => [p.id, p]) || []);
-  const mapaEspecialistas = new Map(especialistas?.map(e => [e.mail, e]) || []);
-
-  // Enriquecer turnos con nombre y apellido
-  this.turnos = this.turnos.map(t => ({
-    ...t,
-    pacienteNombre: `${mapaPacientes.get(t.paciente)?.nombre || ''} ${mapaPacientes.get(t.paciente)?.apellido || ''}`,
-    especialistaNombre: `${mapaEspecialistas.get(t.especialista)?.nombre || ''} ${mapaEspecialistas.get(t.especialista)?.apellido || ''}`
-  }));
+  // Cargar turnos usando el método reutilizable
+  await this.cargarTurnos();
 }
 
 turnosFiltrados() {
@@ -106,7 +74,7 @@ turnosFiltrados() {
 
 
   puedeCancelar(turno: any): boolean {
-    return !['aceptado', 'realizado', 'rechazado'].includes(turno.estado);
+    return !['aceptado', 'realizado', 'rechazado', 'cancelado'].includes(turno.estado);
   }
 
   mostrarCancelar(turnoId: string) {
@@ -116,18 +84,58 @@ turnosFiltrados() {
   async cancelarTurno(turnoId: string) {
     const comentario = this.comentarioCancelacion[turnoId];
     if (!comentario) return;
-
+    
     const { error } = await this.supabase.supabase
       .from('turnos')
       .update({ estado: 'cancelado', motivo_cancelacion: comentario })
       .eq('id', turnoId);
 
     if (!error) {
-      Swal.fire({ icon: 'success', title: 'Turno cancelado' });
-      this.ngOnInit();
+      Swal.fire({ icon: 'success', title: 'Turno cancelado', text: 'El turno fue cancelado correctamente.' });
+      await this.ngOnInit();
     } else {
-      Swal.fire({ icon: 'error', title: 'Error al cancelar' });
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo cancelar el turno.' });
     }
+  }
+
+  async cargarTurnos() {
+    // Traer turnos
+    const { data: turnos, error } = await this.supabase.supabase
+      .from('turnos')
+      .select('*');
+
+    if (error || !turnos) {
+      console.error('Error al cargar turnos:', error);
+      return;
+    }
+
+    this.turnos = turnos;
+    this.especialidades = [...new Set(turnos.map(t => t.especialidad))];
+
+    // Traer pacientes por UUID
+    const pacienteIds = [...new Set(turnos.map(t => t.paciente))].filter(Boolean);
+    const { data: pacientes } = await this.supabase.supabase
+      .from('usuarios')
+      .select('id, nombre, apellido')
+      .in('id', pacienteIds);
+
+    // Traer especialistas por mail
+    const especialistaMails = [...new Set(turnos.map(t => t.especialista))].filter(Boolean);
+    const { data: especialistas } = await this.supabase.supabase
+      .from('usuarios')
+      .select('mail, nombre, apellido')
+      .in('mail', especialistaMails);
+
+    // Armar mapas
+    const mapaPacientes = new Map(pacientes?.map(p => [p.id, p]) || []);
+    const mapaEspecialistas = new Map(especialistas?.map(e => [e.mail, e]) || []);
+
+    // Enriquecer turnos con nombre y apellido
+    this.turnos = this.turnos.map(t => ({
+      ...t,
+      pacienteNombre: `${mapaPacientes.get(t.paciente)?.nombre || ''} ${mapaPacientes.get(t.paciente)?.apellido || ''}`,
+      especialistaNombre: `${mapaEspecialistas.get(t.especialista)?.nombre || ''} ${mapaEspecialistas.get(t.especialista)?.apellido || ''}`
+    }));
   }
 
     goTo(path: string) {

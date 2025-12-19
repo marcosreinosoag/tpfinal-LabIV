@@ -10,7 +10,6 @@ import { trigger, transition, style, animate, query, group } from '@angular/anim
   styleUrls: ['./app.scss'],
   animations: [
     trigger('routeAnimations', [
-   
       transition('* <=> *', [
         query(':enter, :leave', style({ position: 'absolute', width: '100%' }), {
           optional: true

@@ -3,40 +3,43 @@
     <div class="logo">
       <img src="assets/images/icono.ico" alt="Clínica" />
       <div class="titulo-logo">
-        <h2>Clínica OnLine</h2>
-        <span>Especialistas en Salud</span>
+        <h2>{{ translate('welcome.clinicName') }}</h2>
+        <span>{{ translate('welcome.specialists') }}</span>
       </div>
     </div>
     <nav class="acciones-navbar">
+      <div class="language-selector">
+        <select [(ngModel)]="currentLanguage" (change)="changeLanguage(currentLanguage)" class="language-select">
+          <option *ngFor="let lang of languages" [value]="lang.code">{{ lang.name }}</option>
+        </select>
+      </div>
     </nav>
   </header>
  <div class="container">
     <div class="bienvenido">
-      <h1>Bienvenidos</h1>
+      <h1>{{ translate('welcome.title') }}</h1>
       <p>
-        Clínica OnLine, especialista en salud, cuenta con:
+        {{ translate('welcome.subtitle') }}
       </p>
       <ul>
-        <li><strong>6 consultorios</strong></li>
-        <li>Dos laboratorios físicos</li>
-        <li>Una sala de espera general</li>
+        <li><strong>{{ translate('welcome.consultorios') }}</strong></li>
+        <li>{{ translate('welcome.laboratorios') }}</li>
+        <li>{{ translate('welcome.salaEspera') }}</li>
       </ul>
       <div class="buttons">
-        <button class="btn" (click)="goToRegistro('registro')">Registrarse</button>
-        <button class="btn secondary" (click)="goToLogin('login')">Iniciar sesión</button>
+        <button class="btn" (click)="goToRegistro('registro')">{{ translate('welcome.register') }}</button>
+        <button class="btn secondary" (click)="goToLogin('login')">{{ translate('welcome.login') }}</button>
       </div>
     </div>
     <div class="sub-menu">
       <p>
-        Trabajan profesionales de diversas especialidades,
-        que ocupan los consultorios acorde a su disponibilidad, recibiendo pacientes con turno para consulta o
-        tratamiento.
+        {{ translate('welcome.description') }}
       </p>
-      <h2>Horarios</h2>
+      <h2>{{ translate('welcome.schedule') }}</h2>
       <p>
-        Abierto al público:<br>
-        <strong>Lunes a Viernes</strong> de 8:00 a 19:00<br>
-        <strong>Sábados</strong> de 8:00 a 14:00
+        {{ translate('welcome.openToPublic') }}<br>
+        <strong>{{ translate('welcome.weekdays') }}</strong> {{ translate('welcome.weekdaysTime') }}<br>
+        <strong>{{ translate('welcome.saturday') }}</strong> {{ translate('welcome.saturdayTime') }}
       </p>
     </div>
   </div>

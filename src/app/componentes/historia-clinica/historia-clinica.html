@@ -29,7 +29,48 @@
     <input formControlName="presion" type="text" placeholder="Ingrese la presión" />
 
     <hr />
-    <h3>Datos Extra (máximo 3)</h3>
+    <h3>Información del paciente</h3>
+    
+    <!-- Control de rango 0-100 -->
+    <label>Bienestar del paciente (0-100):</label>
+    <div class="range-container">
+      <input 
+        formControlName="rangoDinamico" 
+        type="range" 
+        min="0" 
+        max="100" 
+        step="1"
+        class="range-input"
+      />
+      <span class="range-value">{{ formHistoria.get('rangoDinamico')?.value }}</span>
+    </div>
+
+    <!-- Cuadro de texto numérico -->
+    <label>Cantidad de consultas:</label>
+    <input 
+      formControlName="valorNumerico" 
+      type="number" 
+      placeholder="Ingrese la cantidad de consultas"
+      step="any"
+    />
+
+    <!-- Switch Si/No -->
+    <label>Alergias:</label>
+    <div class="switch-container">
+      <label class="switch">
+        <input 
+          formControlName="switchSiNo" 
+          type="checkbox"
+        />
+        <span class="slider"></span>
+      </label>
+      <span class="switch-label">
+        {{ formHistoria.get('switchSiNo')?.value ? 'Si' : 'No' }}
+      </span>
+    </div>
+
+    <hr />
+    <h3>Datos Extra Adicionales (máximo 3)</h3>
     <div formArrayName="datosExtra">
       <div *ngFor="let dato of datosExtra.controls; let i = index" [formGroupName]="i" class="fila-dato-extra">
         <input placeholder="Clave" formControlName="clave" />

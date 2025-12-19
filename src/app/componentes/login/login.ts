@@ -3,12 +3,14 @@ import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Supabase } from '../../servicios/supabase';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { TranslationService, Language } from '../../servicios/translation.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule], 
+  imports: [ReactiveFormsModule, CommonModule, FormsModule], 
   templateUrl: './login.html',
   styleUrls: ['./login.scss']
 })
@@ -19,33 +21,61 @@ export class Login {
     password: ['', Validators.required]  // Validación de contraseña
   });
   errorMessage: string | null = null;
+  iniciandoSesion: boolean = false;
+  currentLanguage: Language = 'es';
+  languages: { code: Language; name: string }[] = [
+    { code: 'es', name: 'Español' },
+    { code: 'en', name: 'English' },
+    { code: 'pt', name: 'Português' }
+  ];
   private supabaseService = inject(Supabase);  // Servicio de Supabase
   private router = inject(Router);  // Inyectamos el router para navegar
+  public translationService = inject(TranslationService);
+
+  constructor() {
+    // Establecer idioma a español sin guardar en localStorage
+    this.translationService.setLanguage('es', false);
+    this.currentLanguage = 'es';
+  }
+
+  changeLanguage(language: Language) {
+    this.translationService.setLanguage(language, false);
+  }
+
+  translate(key: string): string {
+    return this.translationService.translate(key);
+  }
 
   // Datos de acceso rápido (usuarios predefinidos)
   quickAccessUsers = [
-    { email: 'liydejodre@gufum.com', password: 'hola123', rol: 'admin', fotoPerfil: 'https://ltlzjkqhulpaydaoldma.supabase.co/storage/v1/object/public/imagenes/Nicolas-Perez-1750048048493' },
-    { email: 'fisoffawagre-5441@yopmail.com', password: '123456', rol: 'paciente', fotoPerfil: 'https://ltlzjkqhulpaydaoldma.supabase.co/storage/v1/object/public/imagenes//Paciente-Krillin-Toloza-1-1752539960294' },
-    { email: 'hemmikijasei-5451@yopmail.com', password: 'hola123', rol: 'paciente', fotoPerfil: 'https://ltlzjkqhulpaydaoldma.supabase.co/storage/v1/object/public/imagenes//Paciente-Roshi-Perez-1-1752540534392' },
-    { email: 'dummommouzoifri-2049@yopmail.com', password: 'hola123', rol: 'paciente', fotoPerfil: 'https://ltlzjkqhulpaydaoldma.supabase.co/storage/v1/object/public/imagenes//Paciente-Popo-Rota-1-1752540776751' },
-    { email: 'raqueusseuzuwi-8167@yopmail.com', password: 'hola123', rol: 'especialista', fotoPerfil: 'https://ltlzjkqhulpaydaoldma.supabase.co/storage/v1/object/public/imagenes//Especialista-Goku-Gomez-1-1752540949128' },
-    { email: 'fruveyedeize-7065@yopmail.com', password: 'hola123', rol: 'especialista', fotoPerfil: 'https://ltlzjkqhulpaydaoldma.supabase.co/storage/v1/object/public/imagenes//Especialista-Ten-Han-1-1752541166983' },
+    { email: 'jotebe5731@mekuron.com', password: '12345678', rol: 'admin', fotoPerfil: 'https://sjmmmfxkuimzkkabpkwn.supabase.co/storage/v1/object/public/imagenes/Jose-Lopez-1765945493076' },
+    { email: 'bomiya5332@mucate.com', password: '12345678', rol: 'paciente', fotoPerfil: 'https://sjmmmfxkuimzkkabpkwn.supabase.co/storage/v1/object/public/imagenes/Paciente-Krilin-Paz-1-1765944523550' },
+    { email: 'fivogog687@mekuron.com', password: '12345678', rol: 'paciente', fotoPerfil: 'https://sjmmmfxkuimzkkabpkwn.supabase.co/storage/v1/object/public/imagenes/Paciente-Popo-Tevez-1-1765945111196' },
+    { email: 'gowafar398@mekuron.com', password: '12345678', rol: 'paciente', fotoPerfil: 'https://sjmmmfxkuimzkkabpkwn.supabase.co/storage/v1/object/public/imagenes/Paciente-Roshi-Rafa-1-1765944928517' },
+    { email: 'sivov64564@mekuron.com', password: '12345678', rol: 'especialista', fotoPerfil: 'https://sjmmmfxkuimzkkabpkwn.supabase.co/storage/v1/object/public/imagenes/Especialista-Goku-Perez-1-1765944119670' },
+    { email: 'piwojo1400@mucate.com', password: '12345678', rol: 'especialista', fotoPerfil: 'https://sjmmmfxkuimzkkabpkwn.supabase.co/storage/v1/object/public/imagenes/Especialista-Ten-Golz-1-1765944726605' },
   ];
 
   // Método para manejar el inicio de sesión rápido
-  onQuickAccessLogin(email: string, password: string) {
+  async onQuickAccessLogin(email: string, password: string) {
+    if (this.iniciandoSesion) return;
     this.loginForm.setValue({ email, password });  // Seteamos los valores de email y contraseña en el formulario
-    this.onSubmit();  // Llamamos al método onSubmit para manejar el login
+    await this.onSubmit();  // Llamamos al método onSubmit para manejar el login
   }
 
 async onSubmit() {
+  if (this.iniciandoSesion) return;
+  
   if (this.loginForm.valid) {
     let { email, password } = this.loginForm.value;
 
     if (!email || !password) {
-      this.errorMessage = 'Correo y contraseña son obligatorios.';
+      this.errorMessage = this.translate('login.error.required');
       return;
     }
+
+    this.iniciandoSesion = true;
+    this.errorMessage = null;
 
     try {
       // Intentar login
@@ -59,13 +89,14 @@ async onSubmit() {
         if (loginError.message.toLowerCase().includes('email not confirmed')) {
           Swal.fire({
             icon: 'error',
-            title: 'Correo no verificado',
-            text: 'Por favor, revisá tu correo y verificá tu cuenta antes de iniciar sesión.',
-            confirmButtonText: 'Aceptar'
+            title: this.translate('login.error.emailNotConfirmed'),
+            text: this.translate('login.error.emailNotConfirmedText'),
+            confirmButtonText: 'OK'
           });
         } else {
-          this.errorMessage = 'Credenciales incorrectas. Por favor, intenta de nuevo.';
+          this.errorMessage = this.translate('login.error.credentials');
         }
+        this.iniciandoSesion = false;
         return;
       }
 
@@ -94,10 +125,11 @@ async onSubmit() {
         await this.supabaseService.supabase.auth.signOut();
         Swal.fire({
           icon: 'warning',
-          title: 'Verificá tu correo',
-          text: 'Tu cuenta aún no fue verificada. Revisá tu correo y hacé clic en el enlace de activación.',
-          confirmButtonText: 'Aceptar'
+          title: this.translate('login.error.verifyEmail'),
+          text: this.translate('login.error.verifyEmailText'),
+          confirmButtonText: 'OK'
         });
+        this.iniciandoSesion = false;
         return;
       }
 
@@ -109,8 +141,9 @@ async onSubmit() {
         .single();
 
       if (userError || !data) {
-        this.errorMessage = 'No se pudo obtener el estado del usuario.';
+        this.errorMessage = this.translate('login.error.userStatus');
         await this.supabaseService.supabase.auth.signOut();
+        this.iniciandoSesion = false;
         return;
       }
 
@@ -122,10 +155,11 @@ async onSubmit() {
         await this.supabaseService.supabase.auth.signOut();
         Swal.fire({
           icon: 'error',
-          title: 'Cuenta inhabilitada',
-          text: 'Tu cuenta de especialista fue inhabilitada. Contactá al administrador.',
-          confirmButtonText: 'Aceptar'
+          title: this.translate('login.error.accountDisabled'),
+          text: this.translate('login.error.accountDisabledText'),
+          confirmButtonText: 'OK'
         });
+        this.iniciandoSesion = false;
         return;
       }
 
@@ -143,7 +177,10 @@ async onSubmit() {
       }
 
     } catch (error) {
-      this.errorMessage = 'Error al iniciar sesión. Intenta nuevamente.';
+      this.errorMessage = this.translate('login.error.general');
+      this.iniciandoSesion = false;
+    } finally {
+      this.iniciandoSesion = false;
     }
   }
 }

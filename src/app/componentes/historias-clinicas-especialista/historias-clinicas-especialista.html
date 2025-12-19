@@ -51,12 +51,28 @@
             <p><strong>Presión:</strong> {{ h.presion }}</p>
             <p><strong>Temperatura:</strong> {{ h.temperatura }} °C</p>
 
-            <p><strong>Otros Datos</strong></p>
-            <ul>
-              <li *ngFor="let clave of getClaves(h.datos_extra)">
-                {{ clave }}: {{ h.datos_extra[clave] }}
-              </li>
-            </ul>
+            <!-- Mostrar los 3 campos dinámicos con nombres descriptivos -->
+            <div *ngIf="h.datos_extra">
+              <p *ngIf="h.datos_extra.rangoDinamico !== undefined">
+                <strong>Bienestar del paciente:</strong> {{ h.datos_extra.rangoDinamico }}
+              </p>
+              <p *ngIf="h.datos_extra.valorNumerico !== undefined">
+                <strong>Cantidad de consultas:</strong> {{ h.datos_extra.valorNumerico }}
+              </p>
+              <p *ngIf="h.datos_extra.switchSiNo !== undefined">
+                <strong>Alergias:</strong> {{ h.datos_extra.switchSiNo }}
+              </p>
+            </div>
+
+            <!-- Mostrar otros datos extra adicionales (excluyendo los 3 campos dinámicos) -->
+            <div *ngIf="getDatosExtraAdicionales(h.datos_extra).length > 0">
+              <p><strong>Otros Datos</strong></p>
+              <ul>
+                <li *ngFor="let item of getDatosExtraAdicionales(h.datos_extra)">
+                  {{ item.clave }}: {{ item.valor }}
+                </li>
+              </ul>
+            </div>
             <button *ngIf="datosTurno(h.turno_id)?.calificacionPaciente" class="resena-btn">
               Reseña: {{ datosTurno(h.turno_id)?.calificacionPaciente }}
             </button>

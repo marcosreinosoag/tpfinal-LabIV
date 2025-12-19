@@ -51,6 +51,9 @@ export class MisTurnosEspecialista implements OnInit {
 
   async ngOnInit() {
     this.generarHoras();
+    
+    // Verificar que diasSemana esté inicializado
+    console.log('📅 Días de la semana disponibles:', this.diasSemana);
 
     // Obtener sesión actual y correo
     const { data: session } = await this.supabase.supabase.auth.getUser();
@@ -73,9 +76,22 @@ export class MisTurnosEspecialista implements OnInit {
     this.horarios = usuario.horarios || [];
 
     // Cargar especialidades (puede venir como string o array)
-    this.especialidades = typeof usuario.especialidades === 'string'
-      ? usuario.especialidades.split(',').map((e: string) => e.trim())
-      : usuario.especialidades || [];
+    if (typeof usuario.especialidades === 'string') {
+      // Si es un string, intentar parsearlo como JSON primero
+      try {
+        const parsed = JSON.parse(usuario.especialidades);
+        this.especialidades = Array.isArray(parsed) ? parsed : usuario.especialidades.split(',').map((e: string) => e.trim());
+      } catch {
+        // Si no es JSON válido, tratarlo como string separado por comas
+        this.especialidades = usuario.especialidades.split(',').map((e: string) => e.trim()).filter((e: string) => e.length > 0);
+      }
+    } else if (Array.isArray(usuario.especialidades)) {
+      this.especialidades = usuario.especialidades.filter((e: any) => e && e.trim && e.trim().length > 0);
+    } else {
+      this.especialidades = [];
+    }
+    
+    console.log('📋 Especialidades cargadas:', this.especialidades);
 
     // Obtener turnos del especialista
     const { data: turnosData } = await this.supabase.supabase
@@ -85,28 +101,37 @@ export class MisTurnosEspecialista implements OnInit {
 
     this.turnos = turnosData || [];
 
-    // Obtener pacientes únicos
-    const pacientesIds = [...new Set(this.turnos.map(t => t.paciente))];
-
-    const { data: pacientesData } = await this.supabase.supabase
-      .from('usuarios')
-      .select('id, nombre, apellido')
-      .in('id', pacientesIds);
+    // Obtener pacientes únicos (filtrar valores null/undefined)
+    const pacientesIds = [...new Set(this.turnos.map(t => t.paciente).filter(Boolean))];
 
     const mapaPacientes: Record<string, string> = {};
-    this.pacientesUnicos = pacientesData?.map(p => ({
-      id: p.id,
-      nombre: `${p.nombre} ${p.apellido}`
-    })) || [];
+    
+    if (pacientesIds.length > 0) {
+      const { data: pacientesData, error: pacientesError } = await this.supabase.supabase
+        .from('usuarios')
+        .select('id, nombre, apellido')
+        .in('id', pacientesIds);
 
-    pacientesData?.forEach(p => {
-      mapaPacientes[p.id] = `${p.nombre} ${p.apellido}`;
-    });
+      if (pacientesError) {
+        console.error('Error al cargar pacientes:', pacientesError);
+      }
+
+      this.pacientesUnicos = pacientesData?.map(p => ({
+        id: p.id,
+        nombre: `${p.nombre} ${p.apellido}`
+      })) || [];
+
+      pacientesData?.forEach(p => {
+        mapaPacientes[p.id] = `${p.nombre} ${p.apellido}`;
+      });
+    } else {
+      this.pacientesUnicos = [];
+    }
 
     // Asignar nombre del paciente a cada turno
     this.turnos = this.turnos.map(t => ({
       ...t,
-      nombrePaciente: mapaPacientes[t.paciente] || 'Paciente desconocido'
+      nombrePaciente: t.paciente ? (mapaPacientes[t.paciente] || 'Paciente desconocido') : 'Sin paciente asignado'
     }));
 
     // Obtener historias clínicas asociadas a esos turnos
@@ -244,15 +269,15 @@ export class MisTurnosEspecialista implements OnInit {
     const duracion = horario.duracion || 30;
     let [h, m] = horario.horaInicio.split(':').map(Number);
 
-    // Usar let en lugar de const para que puedas reasignar los valores
-    let [hf, mf] = horario.horaFin.split(':').map(Number); // Cambié const por let aquí
+    
+    let [hf, mf] = horario.horaFin.split(':').map(Number); 
 
     // Ajustar los rangos de hora según el día
     if (horario.dia === 'Sábado') {
-      if (h < 8) h = 8; // El sábado solo se permite entre 08:00 y 14:00
+      if (h < 8) h = 8; // El sábado  08:00 y 14:00
       if (hf > 14) hf = 14;
     } else {
-      if (h < 8) h = 8; // De lunes a viernes solo entre 08:00 y 19:00
+      if (h < 8) h = 8; // De lunes a viernes  08:00 y 19:00
       if (hf > 19) hf = 19;
     }
 
@@ -266,7 +291,7 @@ export class MisTurnosEspecialista implements OnInit {
   }
 
   async guardarHorarios() {
-    // Verificar que los horarios no estén vacíos, que no sean redundantes y que estén dentro del rango permitido
+    // Verificar que los horarios no estén vacíos
     for (let h of this.horarios) {
       if (!this.validarCamposVacios(h.horaInicio, h.horaFin)) return;
       if (!this.validarHorarioRedundante(h.horaInicio, h.horaFin)) return;
@@ -520,8 +545,28 @@ export class MisTurnosEspecialista implements OnInit {
   getClaves(obj: any): string[] {
     return obj ? Object.keys(obj) : [];
   }
+
+  // Función para obtener los datos extra adicionales (excluyendo los 3 campos dinámicos principales)
+  getDatosExtraAdicionales(datosExtra: any): Array<{clave: string, valor: any}> {
+    if (!datosExtra) return [];
+    
+    const camposDinamicos = ['rangoDinamico', 'valorNumerico', 'switchSiNo'];
+    const resultado: Array<{clave: string, valor: any}> = [];
+    
+    for (const clave in datosExtra) {
+      if (!camposDinamicos.includes(clave)) {
+        resultado.push({ clave, valor: datosExtra[clave] });
+      }
+    }
+    
+    return resultado;
+  }
   
   getHorasParaDia(dia: string): string[] {
+    if (!dia || dia.trim() === '') {
+      return [];
+    }
+
     const horas: string[] = [];
     const intervalo = 30;
 
@@ -534,15 +579,29 @@ export class MisTurnosEspecialista implements OnInit {
       sábado: { inicio: '08:00', fin: '14:00' },
     };
 
-    const diaNormalizado = dia.toLowerCase() as DiasSemana;
+    // Normalizar el día: convertir "Lunes" a "lunes", etc.
+    const diaNormalizado = dia.toLowerCase().trim() as DiasSemana;
+    
+    // Verificar que el día existe en el registro
+    if (!horasPermitidas[diaNormalizado]) {
+      return [];
+    }
+
     const { inicio, fin } = horasPermitidas[diaNormalizado];
     const [hInicio, mInicio] = inicio.split(':').map(Number);
     const [hFin, mFin] = fin.split(':').map(Number);
 
-    for (let h = hInicio; h <= hFin; h++) {
-      for (let m = 0; m < 60; m += intervalo) {
-        if (h === hFin && m > mFin) break;
-        horas.push(`${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`);
+    // Generar horarios desde inicio hasta fin con intervalos de 30 minutos
+    let horaActual = hInicio;
+    let minutoActual = mInicio;
+
+    while (horaActual < hFin || (horaActual === hFin && minutoActual <= mFin)) {
+      horas.push(`${horaActual.toString().padStart(2, '0')}:${minutoActual.toString().padStart(2, '0')}`);
+      
+      minutoActual += intervalo;
+      if (minutoActual >= 60) {
+        horaActual++;
+        minutoActual = 0;
       }
     }
 

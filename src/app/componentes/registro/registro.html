@@ -3,38 +3,47 @@
     <div class="logo">
       <img src="assets/images/icono.ico" alt="Clínica" />
       <div class="titulo-logo">
-        <h2>Clínica OnLine</h2>
-        <span>Especialistas en Salud</span>
+        <h2>{{ translate('welcome.clinicName') }}</h2>
+        <span>{{ translate('welcome.specialists') }}</span>
       </div>
     </div>
+    <ul class="navbar-links">
+      <li>
+        <div class="language-selector">
+          <select [(ngModel)]="currentLanguage" (change)="changeLanguage(currentLanguage)" class="language-select">
+            <option *ngFor="let lang of languages" [value]="lang.code">{{ lang.name }}</option>
+          </select>
+        </div>
+      </li>
+    </ul>
   </nav>
 
   <div *ngIf="!isRoleSelected" class="selector-contenedor">
-    <h2>Selecciona tu tipo de usuario</h2>
+    <h2>{{ translate('register.selectUserType') }}</h2>
     <div class="selector-opciones">
       <button (click)="selectRole('Paciente')" class="card-opcion">
-        <img src="/assets/images/paciente.png" alt="Paciente" />
-        <span>Paciente</span>
+        <img src="/assets/images/paciente.png" [alt]="translate('register.patient')" />
+        <span>{{ translate('register.patient') }}</span>
       </button>
       <button (click)="selectRole('Especialista')" class="card-opcion">
-        <img src="/assets/images/medico.jpg" alt="Especialista" />
-        <span>Especialista</span>
+        <img src="/assets/images/medico.jpg" [alt]="translate('register.specialist')" />
+        <span>{{ translate('register.specialist') }}</span>
       </button>
     </div>
   </div>
 
   <div *ngIf="isRoleSelected" class="form-container">
-    <h2>Registro de {{ selectedRole }}</h2>
+    <h2>{{ translate('register.title') }} {{ selectedRole === 'Paciente' ? translate('register.patient') : translate('register.specialist') }}</h2>
     <form [formGroup]="selectedRole === 'Paciente' ? formPaciente : formEspecialista" (ngSubmit)="onSubmit()">
 
       <div class="row">
         <div>
-          <label for="nombre">Nombre</label>
+          <label for="nombre">{{ translate('register.name') }}</label>
           <input id="nombre" formControlName="nombre" type="text" appAutoFocus />
           <small *ngIf="nombre?.invalid && nombre?.touched">{{ mensajeError('nombre') }}</small>
         </div>
         <div>
-          <label for="apellido">Apellido</label>
+          <label for="apellido">{{ translate('register.lastName') }}</label>
           <input id="apellido" formControlName="apellido" type="text" />
           <small *ngIf="apellido?.invalid && apellido?.touched">{{ mensajeError('apellido') }}</small>
         </div>
@@ -42,22 +51,22 @@
 
       <div class="row">
         <div>
-          <label for="edad">Edad</label>
+          <label for="edad">{{ translate('register.age') }}</label>
           <input id="edad" formControlName="edad" type="number" />
           <small *ngIf="edad?.invalid && edad?.touched">{{ mensajeError('edad') }}</small>
         </div>
         <div>
-          <label for="dni">DNI</label>
+          <label for="dni">{{ translate('register.dni') }}</label>
           <input id="dni" formControlName="dni" type="text" />
           <small *ngIf="dni?.invalid && dni?.touched">{{ mensajeError('dni') }}</small>
         </div>
       </div>
 
-      <label for="mail">Email</label>
+      <label for="mail">{{ translate('register.email') }}</label>
       <input id="mail" formControlName="mail" type="email" />
       <small *ngIf="mail?.invalid && mail?.touched">{{ mensajeError('mail') }}</small>
 
-      <label for="password">Contraseña</label>
+      <label for="password">{{ translate('register.password') }}</label>
       <div style="display: flex; align-items: center; gap: 0.5rem;">
         <input id="password" formControlName="password" type="password" />
         <button type="button" appMostrarPassword style="border: none; background: none; cursor: pointer;">👁️</button>
@@ -67,33 +76,33 @@
       </small>
 
       <div *ngIf="selectedRole === 'Paciente'">
-        <label for="obraSocial">Obra Social</label>
+        <label for="obraSocial">{{ translate('register.healthInsurance') }}</label>
         <input id="obraSocial" formControlName="obraSocial" type="text" />
         <small *ngIf="obraSocial?.invalid && obraSocial?.touched">{{ mensajeError('obraSocial') }}</small>
 
-        <label for="fotoPerfil1">Foto de Perfil 1:</label>
+        <label for="fotoPerfil1">{{ translate('register.profilePhoto1') }}</label>
         <input type="file" (change)="onFileChange($event, 1)" id="fotoPerfil1" />
 
-        <label for="fotoPerfil2">Foto de Perfil 2:</label>
+        <label for="fotoPerfil2">{{ translate('register.profilePhoto2') }}</label>
         <input type="file" (change)="onFileChange($event, 2)" id="fotoPerfil2" />
       </div>
 
       <div *ngIf="selectedRole === 'Especialista'">
-        <label>Especialidades:</label>
+        <label>{{ translate('register.specialties') }}</label>
         <div *ngFor="let especialidad of especialidades">
           <input type="checkbox" [value]="especialidad" (change)="onEspecialidadChange($event)" /> {{ especialidad }}
         </div>
         <small *ngIf="formEspecialista.get('especialidades')?.errors?.['required'] && formEspecialista.touched">
-          Debe seleccionar al menos una especialidad.
+          {{ translate('register.error.specialtyRequired') }}
         </small>
 
-        <input type="text" #nuevaEspecialidad placeholder="Agregar nueva especialidad" />
+        <input type="text" #nuevaEspecialidad [placeholder]="translate('register.addSpecialty')" />
         <button type="button" class="add-button"
           (click)="agregarEspecialidad(nuevaEspecialidad.value); nuevaEspecialidad.value=''">
-          Agregar
+          {{ translate('register.add') }}
         </button>
 
-        <label for="fotoPerfil">Foto de Perfil</label>
+        <label for="fotoPerfil">{{ translate('register.profilePhoto') }}</label>
         <input type="file" (change)="onFileChange($event, 1)" id="fotoPerfil" />
       </div>
 
@@ -105,9 +114,9 @@
           enviando ||
           (selectedRole === 'Paciente' ? formPaciente.invalid : formEspecialista.invalid)
         ">
-        <ng-container *ngIf="!enviando">Registrar</ng-container>
+        <ng-container *ngIf="!enviando">{{ translate('register.submit') }}</ng-container>
         <ng-container *ngIf="enviando">
-          <span class="spinner"></span> Registrando...
+          <span class="spinner"></span> {{ translate('register.registering') }}
         </ng-container>
       </button>
     </form>
